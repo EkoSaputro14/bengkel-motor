@@ -1,0 +1,644 @@
+{
+  "info": {
+    "_postman_id": "bengkel-motor-api-v1-collection",
+    "name": "Sistem Informasi Servis Bengkel Motor - REST API v1",
+    "description": "Postman Collection resmi untuk pengujian RESTful API Layanan Penjadwalan Servis Bengkel Motor (Kelompok 2 - Pemrograman Web Service). Termasuk pengujian Praktikum A (GET), Praktikum B (POST), dan Praktikum C (Error Testing).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Health Check",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "02 Register Customer",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    var jsonData = pm.response.json();",
+              "    if (jsonData.data && jsonData.data.token) {",
+              "        pm.environment.set('customer_token', jsonData.data.token);",
+              "        pm.environment.set('token', jsonData.data.token);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nama\": \"Eko Saputro\",\n  \"email\": \"eko.test@bengkelmotor.test\",\n  \"no_hp\": \"081234567890\",\n  \"password\": \"password123\",\n  \"role\": \"CUSTOMER\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        }
+      }
+    },
+    {
+      "name": "03 Login Customer",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    if (jsonData.data && jsonData.data.token) {",
+              "        pm.environment.set('customer_token', jsonData.data.token);",
+              "        pm.environment.set('token', jsonData.data.token);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"eko@bengkelmotor.test\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "04 Login Mechanic",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    if (jsonData.data && jsonData.data.token) {",
+              "        pm.environment.set('mechanic_token', jsonData.data.token);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"mechanic@bengkelmotor.test\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "05 Login Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    if (jsonData.data && jsonData.data.token) {",
+              "        pm.environment.set('admin_token', jsonData.data.token);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@bengkelmotor.test\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "06 Get Current User Profile",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "me"
+          ]
+        }
+      }
+    },
+    {
+      "name": "07 Create Vehicle",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    var jsonData = pm.response.json();",
+              "    if (jsonData.data && jsonData.data.id) {",
+              "        pm.environment.set('vehicle_id', jsonData.data.id);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"no_polisi\": \"G 9999 PM\",\n  \"merk\": \"Honda\",\n  \"model\": \"ADV 160 ABS\",\n  \"tahun\": 2024\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/vehicles",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "vehicles"
+          ]
+        }
+      }
+    },
+    {
+      "name": "08 List Vehicles",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/vehicles",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "vehicles"
+          ]
+        }
+      }
+    },
+    {
+      "name": "09 Get Available Slots (Praktikum A)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "var jsonData = pm.response.json();",
+              "if (jsonData.data && jsonData.data.length > 0) {",
+              "    pm.environment.set('slot_id', jsonData.data[0].id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/service-slots?tanggal=2026-10-06",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "service-slots"
+          ],
+          "query": [
+            {
+              "key": "tanggal",
+              "value": "2026-10-06"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "10 Create Booking Auto-Confirm (Praktikum B)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201 Created', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "var jsonData = pm.response.json();",
+              "if (jsonData.data && jsonData.data.id) {",
+              "    pm.environment.set('booking_id', jsonData.data.id);",
+              "    pm.environment.set('booking_code', jsonData.data.booking_code);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"vehicle_id\": 1,\n  \"slot_id\": 1,\n  \"keluhan\": \"Ganti oli mesin MPX2 dan setel rantai roda\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "bookings"
+          ]
+        }
+      }
+    },
+    {
+      "name": "11 Get Booking Details",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/bookings/{{booking_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "bookings",
+            "{{booking_id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "12 Mechanic Active Queue",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{mechanic_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/mechanic/bookings",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "mechanic",
+            "bookings"
+          ]
+        }
+      }
+    },
+    {
+      "name": "13 Mechanic Submit Service Record",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{mechanic_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"booking_id\": 1,\n  \"odometer_km\": 10500,\n  \"tindakan\": \"Penggantian oli mesin MPX2, pembersihan CVT, penyetelan celah klep.\",\n  \"suku_cadang\": [\n    {\n      \"nama\": \"Oli Mesin MPX2 0.8L\",\n      \"qty\": 1,\n      \"keterangan\": \"Penggantian rutin\"\n    },\n    {\n      \"nama\": \"Busi NGK CPR9EA-9\",\n      \"qty\": 1,\n      \"keterangan\": \"Ganti baru\"\n    }\n  ],\n  \"catatan_mekanik\": \"Kondisi v-belt dan kampas rem masih sangat aman.\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/service-records",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "service-records"
+          ]
+        }
+      }
+    },
+    {
+      "name": "14 Get Service History by No Polisi",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/service-history?no_polisi=G 1234 ABC",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "service-history"
+          ],
+          "query": [
+            {
+              "key": "no_polisi",
+              "value": "G 1234 ABC"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "15 Error Testing - Invalid Date Query (Praktikum C - 422)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 422 Unprocessable Content', function () {",
+              "    pm.response.to.have.status(422);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/service-slots?tanggal=besok-pagi",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "service-slots"
+          ],
+          "query": [
+            {
+              "key": "tanggal",
+              "value": "besok-pagi"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "16 Error Testing - Nonexistent Endpoint (Praktikum C - 404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/slot-kosong-tidak-ada",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "slot-kosong-tidak-ada"
+          ]
+        }
+      }
+    },
+    {
+      "name": "17 Error Testing - Unsupported Method (Praktikum C - 405)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 405 Method Not Allowed', function () {",
+              "    pm.response.to.have.status(405);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{base_url}}/service-slots",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "service-slots"
+          ]
+        }
+      }
+    }
+  ]
+}
