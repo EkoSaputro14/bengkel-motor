@@ -10,7 +10,7 @@ Tutorial ini dirancang khusus untuk memenuhi tugas perkuliahan **Inspeksi HTTP M
 ### A. Pastikan Backend Server Aktif
 Sebelum membuka Postman, pastikan server Laravel 12 sedang berjalan:
 ```bash
-cd C:\Users\SMANSA\workspace\bengkel-motor\backend
+cd backend
 php artisan serve
 ```
 *Server aktif di: `http://127.0.0.1:8000`*

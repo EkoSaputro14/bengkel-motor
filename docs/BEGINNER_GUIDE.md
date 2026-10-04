@@ -47,7 +47,7 @@ Buka aplikasi **Windows PowerShell** atau **Terminal**, lalu ikuti langkah-langk
 
 ### Langkah A: Masuk ke Direktori Proyek
 ```powershell
-cd C:\Users\SMANSA\workspace\bengkel-motor
+cd bengkel-motor
 ```
 
 ---
@@ -94,7 +94,7 @@ cd C:\Users\SMANSA\workspace\bengkel-motor
 1. **Buka jendela Windows PowerShell / Terminal baru**.
 2. **Masuk ke folder frontend**:
    ```powershell
-   cd C:\Users\SMANSA\workspace\bengkel-motor\frontend
+   cd frontend
    ```
 
 3. **Pasang dependensi Node.js**:
