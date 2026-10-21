@@ -32,9 +32,9 @@
 
 | Komponen | Base URL | Keterangan |
 |---|---|---|
-| **API Gateway / Backend** | `http://localhost:8000/api/v1` | Titik masuk client utama (Laravel 12 REST API Server) |
-| **Cloudflare Live Tunnel** | `https://bengkel.ekohomelab.online/api/v1` | Public Edge Deployment resmi (SSL/TLS HTTPS) |
-| **Frontend Web & PWA** | `https://bengkel.ekohomelab.online` | Antarmuka pengguna React 19 + TypeScript + Vite |
+| **Backend API Server** | `http://localhost:8000/api/v1` | Titik masuk utama API (Laravel 12 REST API Server) |
+| **Frontend Web Client** | `http://localhost:5173` | Antarmuka pengguna responsif React 19 + TypeScript + Vite |
+| **Testing Client (Postman)** | `http://localhost:8000/api/v1` | Lingkungan pengujian manual & otomatis Postman / Bruno |
 
 ### Konvensi Penamaan
 

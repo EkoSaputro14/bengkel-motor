@@ -5,9 +5,7 @@
 **Mata Kuliah:** Pemrograman Web Service  
 **Dosen Pengampu:** Zaenul Arif, S.Kom., M.Kom  
 **Target Platform:** Windows 10/11, Postman Desktop, VS Code Thunder Client, Windows Terminal / PowerShell  
-**Base URL API:**
-- **Lokal:** `http://127.0.0.1:8000/api/v1` (atau `http://localhost:8000/api/v1`)
-- **Publik Live:** `https://bengkel.ekohomelab.online/api/v1`
+**Base URL API:** `http://localhost:8000/api/v1` (atau `http://127.0.0.1:8000/api/v1`)
 
 ---
 
@@ -41,10 +39,7 @@ Pilih salah satu cara berikut:
   cd backend
   php artisan serve
   ```
-  *Server aktif di: `http://127.0.0.1:8000`*
-
-- **Opsi B (Menggunakan URL Cloudflare Live):**
-  Gunakan URL publik `https://bengkel.ekohomelab.online/api/v1` tanpa perlu menjalankan PHP lokal.
+  *Server aktif di: `http://localhost:8000` (Endpoint: `http://localhost:8000/api/v1`)*
 
 ---
 

@@ -24,8 +24,7 @@
 ### Langkah 3: Masukkan Alamat URL Endpoint
 1. Klik pada kolom teks bertuliskan **"Enter URL or paste text"**.
 2. Masukkan alamat URL API:
-   - Jika memakai server lokal: `http://127.0.0.1:8000/api/v1/...`
-   - Jika memakai internet publik: `https://bengkel.ekohomelab.online/api/v1/...`
+   - Gunakan alamat: `http://localhost:8000/api/v1/...` (misalnya: `http://localhost:8000/api/v1/auth/register`).
 
 ### Langkah 4: Pasang Header Wajib (Accept & Content-Type)
 1. Klik tab **"Headers"** (terletak di bawah kolom URL).
