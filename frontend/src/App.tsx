@@ -19,12 +19,13 @@ import { AdminSlotManager } from './pages/AdminSlotManager';
 import { AdminUserManager } from './pages/AdminUserManager';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { Wrench } from 'lucide-react';
 
 export function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+        <div className="min-h-screen flex flex-col text-slate-900">
           <Navbar />
 
           <main className="flex-grow">
@@ -62,13 +63,18 @@ export function App() {
           </main>
 
           {/* Footer */}
-          <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-            <div className="max-w-7xl mx-auto px-4 space-y-1">
-              <p className="font-semibold text-slate-700">
-                Sistem Informasi Layanan Penjadwalan Servis Bengkel Motor — Kelompok 2
-              </p>
-              <p>
-                Universitas Harkat Negeri • Pemrograman Web Service 2026/2027 • Laravel 12 & React PWA
+          <footer className="mt-8 px-4 pb-6">
+            <div className="max-w-7xl mx-auto bg-white/70 backdrop-blur ring-1 ring-slate-900/5 rounded-3xl px-6 py-6 text-center space-y-2 shadow-soft">
+              <div className="flex items-center justify-center gap-2">
+                <span className="p-1.5 bg-gradient-to-br from-brand-500 to-brand-800 text-white rounded-lg">
+                  <Wrench className="h-3.5 w-3.5" />
+                </span>
+                <p className="font-bold text-sm text-slate-800">
+                  Sistem Informasi Layanan Penjadwalan Servis Bengkel Motor — Kelompok 2
+                </p>
+              </div>
+              <p className="text-xs text-slate-400">
+                Universitas Harkat Negeri • Pemrograman Web Service 2026/2027 • Laravel 12 &amp; React PWA
               </p>
             </div>
           </footer>

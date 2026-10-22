@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import type { Booking, SparePart } from '../types/api';
-import { Wrench, Calendar, Clock, Car, CheckCircle2, AlertCircle, Plus, Trash2, X, Phone } from 'lucide-react';
+import { Wrench, Calendar, Clock, Bike, CheckCircle2, AlertCircle, Plus, Trash2, X, Phone, RefreshCw, ClipboardList } from 'lucide-react';
 
 export const MechanicDashboard: React.FC = () => {
   const [queue, setQueue] = useState<Booking[]>([]);
@@ -97,31 +97,37 @@ export const MechanicDashboard: React.FC = () => {
     }
   };
 
+  const inputCls =
+    'w-full px-4 py-2.5 rounded-xl bg-slate-50 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-600 focus:bg-white text-sm transition';
+  const labelCls = 'block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5';
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fade-up">
       {/* Header */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <div className="inline-flex items-center space-x-2 bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-md mb-2">
+      <div className="relative overflow-hidden bg-white p-6 sm:p-7 rounded-3xl ring-1 ring-slate-900/5 shadow-soft flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="absolute -top-16 -right-10 w-56 h-56 bg-amber-100/70 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative">
+          <div className="inline-flex items-center gap-1.5 bg-amber-50 ring-1 ring-amber-200 text-amber-800 text-xs font-bold px-3 py-1 rounded-full mb-2.5">
             <Wrench className="h-3.5 w-3.5" />
-            <span>Modul Tablet & Layar Mekanik Bengkel</span>
+            <span>Modul Tablet &amp; Layar Mekanik Bengkel</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Antrean Servis Aktif</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Antrean Servis Aktif</h1>
+          <p className="text-sm text-slate-500 mt-1">
             Daftar motor yang telah terkonfirmasi dan siap dikerjakan di pit bengkel.
           </p>
         </div>
 
         <button
           onClick={fetchQueue}
-          className="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-xl transition"
+          className="relative inline-flex items-center gap-2 px-4 py-2.5 bg-white ring-1 ring-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-bold rounded-xl transition active:scale-95"
         >
-          ↻ Segarkan Antrean
+          <RefreshCw className="h-4 w-4 text-slate-500" />
+          Segarkan Antrean
         </button>
       </div>
 
       {success && (
-        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl text-sm flex items-center space-x-2">
+        <div className="bg-emerald-50 ring-1 ring-emerald-200 text-emerald-800 p-4 rounded-2xl text-sm flex items-center gap-2.5 animate-fade-in">
           <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
           <span>{success}</span>
         </div>
@@ -129,13 +135,13 @@ export const MechanicDashboard: React.FC = () => {
 
       {/* Queue Grid */}
       {isLoading ? (
-        <div className="py-12 flex justify-center">
-          <div className="animate-spin h-8 w-8 border-b-2 border-red-700 rounded-full" />
+        <div className="py-16 flex justify-center">
+          <div className="animate-spin h-8 w-8 border-[3px] border-brand-200 border-t-brand-600 rounded-full" />
         </div>
       ) : queue.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center text-slate-500 text-sm space-y-2">
+        <div className="bg-white rounded-3xl ring-1 ring-slate-900/5 shadow-soft p-14 text-center text-slate-500 text-sm space-y-2">
           <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
-          <p className="font-bold text-slate-800 text-base">Tidak Ada Antrean Servis Aktif</p>
+          <p className="font-extrabold text-slate-800 text-base">Tidak Ada Antrean Servis Aktif</p>
           <p className="text-xs text-slate-400">Seluruh booking yang terkonfirmasi telah selesai dikerjakan.</p>
         </div>
       ) : (
@@ -143,50 +149,53 @@ export const MechanicDashboard: React.FC = () => {
           {queue.map((b) => (
             <div
               key={b.id}
-              className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4"
+              className="bg-white p-6 rounded-3xl ring-1 ring-slate-900/5 shadow-soft hover:shadow-lift hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between gap-4"
             >
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
-                  <span className="font-mono text-xs font-bold bg-slate-900 text-white px-2.5 py-1 rounded-md">
+                  <span className="font-mono text-xs font-extrabold bg-ink-950 text-white px-2.5 py-1.5 rounded-lg ring-1 ring-slate-700">
                     {b.booking_code}
                   </span>
-                  <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded">
+                  <span className="inline-flex items-center gap-1.5 bg-emerald-50 ring-1 ring-emerald-200 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     SIAP DIKERJAKAN
                   </span>
                 </div>
 
                 <div>
-                  <div className="flex items-center space-x-2">
-                    <Car className="h-5 w-5 text-red-700" />
-                    <h3 className="text-lg font-bold text-slate-900">{b.vehicle?.model}</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 bg-brand-50 rounded-lg text-brand-700">
+                      <Bike className="h-4 w-4" />
+                    </span>
+                    <h3 className="text-lg font-extrabold text-slate-900">{b.vehicle?.model}</h3>
                   </div>
-                  <div className="font-mono font-bold text-sm text-red-700 mt-0.5">
+                  <div className="font-mono font-bold text-sm text-brand-700 mt-1">
                     {b.vehicle?.no_polisi} <span className="text-slate-400 font-sans font-normal text-xs">({b.vehicle?.merk})</span>
                   </div>
                 </div>
 
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs text-slate-600 space-y-1">
-                  <div className="flex items-center space-x-1 font-semibold text-slate-800">
+                <div className="bg-slate-50/80 ring-1 ring-slate-100 p-3.5 rounded-2xl text-xs text-slate-600 space-y-1.5">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-800">
                     <Calendar className="h-3.5 w-3.5 text-slate-400" />
                     <span>{b.slot?.tanggal} • {b.slot?.jam_mulai} WIB</span>
                   </div>
-                  <div className="flex items-center space-x-1 text-slate-500">
+                  <div className="flex items-center gap-1.5 text-slate-500">
                     <Phone className="h-3.5 w-3.5 text-slate-400" />
                     <span>Pemilik: {b.vehicle?.user?.nama} ({b.vehicle?.user?.no_hp})</span>
                   </div>
                 </div>
 
-                <div className="bg-amber-50/70 border border-amber-200/80 p-3 rounded-xl text-xs text-amber-950">
+                <div className="bg-amber-50/80 ring-1 ring-amber-200/70 p-3.5 rounded-2xl text-xs text-amber-950">
                   <span className="font-bold">Keluhan: </span>"{b.keluhan}"
                 </div>
               </div>
 
               <button
                 onClick={() => openServiceModal(b)}
-                className="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-3 rounded-xl text-sm shadow transition flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-bold py-3 rounded-xl text-sm shadow-glow transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
               >
                 <Wrench className="h-4 w-4" />
-                <span>Mulai & Catat Servis</span>
+                <span>Mulai &amp; Catat Servis</span>
               </button>
             </div>
           ))}
@@ -195,18 +204,22 @@ export const MechanicDashboard: React.FC = () => {
 
       {/* Service Record Entry Modal */}
       {activeBooking && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95">
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
-              <div>
-                <h3 className="font-bold text-base">Pencatatan Servis & Digital Logbook</h3>
-                <div className="text-xs text-slate-400 font-mono">
+        <div className="fixed inset-0 bg-ink-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-scale-in">
+            <div className="relative px-6 py-4 flex justify-between items-center bg-ink-950 text-white overflow-hidden">
+              <div className="absolute -top-16 right-8 w-52 h-52 bg-brand-600/30 rounded-full blur-3xl pointer-events-none" />
+              <div className="relative">
+                <h3 className="font-extrabold text-base flex items-center gap-2">
+                  <ClipboardList className="h-4 w-4 text-brand-400" />
+                  Pencatatan Servis &amp; Digital Logbook
+                </h3>
+                <div className="text-xs text-slate-400 font-mono mt-0.5">
                   {activeBooking.vehicle?.no_polisi} — {activeBooking.vehicle?.model} ({activeBooking.booking_code})
                 </div>
               </div>
               <button
                 onClick={() => setActiveBooking(null)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg"
+                className="relative text-slate-400 hover:text-white hover:bg-white/10 p-1.5 rounded-xl transition active:scale-90"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -214,7 +227,7 @@ export const MechanicDashboard: React.FC = () => {
 
             <form onSubmit={handleSubmitServiceRecord} className="p-6 overflow-y-auto space-y-5">
               {error && (
-                <div className="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl text-xs flex items-center space-x-2">
+                <div className="bg-rose-50 ring-1 ring-rose-200 text-rose-700 p-3 rounded-xl text-xs flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 flex-shrink-0" />
                   <span>{error}</span>
                 </div>
@@ -222,9 +235,7 @@ export const MechanicDashboard: React.FC = () => {
 
               {/* Odometer Input */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Kilometer Odometer (KM)
-                </label>
+                <label className={labelCls}>Kilometer Odometer (KM)</label>
                 <input
                   type="number"
                   required
@@ -232,35 +243,33 @@ export const MechanicDashboard: React.FC = () => {
                   value={odometerKm}
                   onChange={(e) => setOdometerKm(Number(e.target.value))}
                   placeholder="Contoh: 12500"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold text-sm focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                  className="w-full px-4 py-2.5 rounded-xl bg-ink-950 text-white ring-1 ring-slate-700 focus:ring-2 focus:ring-brand-500 font-mono font-bold text-sm transition"
                 />
               </div>
 
               {/* Actions Performed */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Tindakan & Perbaikan yang Dilakukan
-                </label>
+                <label className={labelCls}>Tindakan &amp; Perbaikan yang Dilakukan</label>
                 <textarea
                   required
                   rows={3}
                   value={tindakan}
                   onChange={(e) => setTindakan(e.target.value)}
                   placeholder="Contoh: Ganti oli mesin, bersihkan filter udara, kuras minyak rem, setel klep, pembersihan transmisi CVT."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                  className={inputCls}
                 />
               </div>
 
               {/* Dynamic Spare Parts Table */}
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 <div className="flex justify-between items-center">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Suku Cadang & Oli yang Diganti
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider">
+                    Suku Cadang &amp; Oli yang Diganti
                   </label>
                   <button
                     type="button"
                     onClick={addSparePartRow}
-                    className="text-xs bg-red-50 hover:bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-lg flex items-center space-x-1"
+                    className="text-xs bg-brand-50 hover:bg-brand-100 ring-1 ring-brand-100 text-brand-700 font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition active:scale-95"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     <span>Tambah Baris</span>
@@ -269,13 +278,13 @@ export const MechanicDashboard: React.FC = () => {
 
                 <div className="space-y-2">
                   {spareParts.map((part, idx) => (
-                    <div key={idx} className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <div key={idx} className="flex flex-wrap items-center gap-2 bg-slate-50/80 p-2.5 rounded-2xl ring-1 ring-slate-200">
                       <input
                         type="text"
                         placeholder="Nama sparepart / oli"
                         value={part.nama}
                         onChange={(e) => updateSparePart(idx, 'nama', e.target.value)}
-                        className="flex-grow px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs focus:ring-1 focus:ring-red-600"
+                        className="flex-grow min-w-[140px] px-3 py-2 bg-white ring-1 ring-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-600 focus:bg-white transition"
                       />
                       <input
                         type="number"
@@ -283,19 +292,19 @@ export const MechanicDashboard: React.FC = () => {
                         placeholder="Qty"
                         value={part.qty}
                         onChange={(e) => updateSparePart(idx, 'qty', Number(e.target.value))}
-                        className="w-16 px-2 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-center font-bold focus:ring-1 focus:ring-red-600"
+                        className="w-16 px-2 py-2 bg-white ring-1 ring-slate-200 rounded-xl text-xs text-center font-bold focus:ring-2 focus:ring-brand-600 transition"
                       />
                       <input
                         type="text"
                         placeholder="Keterangan (opsional)"
                         value={part.keterangan || ''}
                         onChange={(e) => updateSparePart(idx, 'keterangan', e.target.value)}
-                        className="w-40 px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs focus:ring-1 focus:ring-red-600"
+                        className="w-44 flex-grow px-3 py-2 bg-white ring-1 ring-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-600 focus:bg-white transition"
                       />
                       <button
                         type="button"
                         onClick={() => removeSparePartRow(idx)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg"
+                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition active:scale-90"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -306,31 +315,29 @@ export const MechanicDashboard: React.FC = () => {
 
               {/* Mechanic Notes */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Catatan Tambahan untuk Pelanggan (Opsional)
-                </label>
+                <label className={labelCls}>Catatan Tambahan untuk Pelanggan (Opsional)</label>
                 <input
                   type="text"
                   value={catatanMekanik}
                   onChange={(e) => setCatatanMekanik(e.target.value)}
                   placeholder="Contoh: Kampas rem depan mulai menipis, disarankan ganti di servis berikutnya."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                  className={inputCls}
                 />
               </div>
 
               {/* Submit Buttons */}
-              <div className="pt-4 flex justify-end space-x-3 border-t border-slate-100">
+              <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setActiveBooking(null)}
-                  className="px-4 py-2.5 border border-slate-300 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition"
+                  className="px-4 py-2.5 ring-1 ring-slate-200 bg-white text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition active:scale-95"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 bg-red-700 hover:bg-red-800 text-white rounded-xl text-sm font-bold shadow transition flex items-center space-x-2 disabled:opacity-50"
+                  className="px-6 py-2.5 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white rounded-xl text-sm font-bold shadow-glow transition flex items-center gap-2 disabled:opacity-50 active:scale-95"
                 >
                   {isSubmitting ? (
                     <span>Menyimpan Rekam Servis...</span>
