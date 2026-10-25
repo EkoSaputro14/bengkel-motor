@@ -146,7 +146,7 @@ export const CustomerDashboard: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {vehicles.map((v) => (
+              {vehicles.slice(0, 3).map((v) => (
                 <div key={v.id} className="p-4 bg-slate-50/80 ring-1 ring-slate-100 rounded-2xl flex justify-between items-center hover:ring-brand-200 hover:bg-brand-50/40 transition-all">
                   <div>
                     <div className="font-bold text-slate-900 text-sm">{v.model}</div>
@@ -157,11 +157,20 @@ export const CustomerDashboard: React.FC = () => {
                   </span>
                 </div>
               ))}
+
+              {vehicles.length > 3 && (
+                <Link
+                  to="/customer/vehicles"
+                  className="block text-center py-2 text-xs font-bold text-brand-700 hover:text-brand-800 hover:bg-brand-50/50 rounded-xl transition"
+                >
+                  + Lihat {vehicles.length - 3} Motor Lainnya →
+                </Link>
+              )}
             </div>
           )}
         </div>
 
-        {/* Recent Bookings & History */}
+        {/* Recent Bookings & History (Max 3 Items) */}
         <div className="lg:col-span-2 bg-white p-6 rounded-3xl ring-1 ring-slate-900/5 shadow-soft space-y-4">
           <div className="flex justify-between items-center border-b border-slate-100 pb-3.5">
             <h2 className="font-extrabold text-slate-900 flex items-center gap-2">
@@ -171,7 +180,7 @@ export const CustomerDashboard: React.FC = () => {
               <span>Riwayat Servis &amp; Booking Terakhir</span>
             </h2>
             <Link to="/customer/bookings" className="text-xs font-bold text-brand-700 hover:underline">
-              Lihat Semua
+              Lihat Semua ({bookings.length})
             </Link>
           </div>
 
@@ -182,7 +191,7 @@ export const CustomerDashboard: React.FC = () => {
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
-              {bookings.slice(0, 5).map((b) => (
+              {bookings.slice(0, 3).map((b) => (
                 <div key={b.id} className="py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 group">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -205,6 +214,18 @@ export const CustomerDashboard: React.FC = () => {
                   </Link>
                 </div>
               ))}
+
+              {bookings.length > 3 && (
+                <div className="pt-3 text-center">
+                  <Link
+                    to="/customer/bookings"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-700 hover:text-brand-800 hover:underline"
+                  >
+                    <span>Lihat {bookings.length - 3} Riwayat Servis Lainnya</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>

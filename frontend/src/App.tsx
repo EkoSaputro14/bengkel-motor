@@ -19,6 +19,8 @@ import { AdminSlotManager } from './pages/AdminSlotManager';
 import { AdminUserManager } from './pages/AdminUserManager';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { Wrench } from 'lucide-react';
 
 export function App() {
@@ -36,6 +38,11 @@ export function App() {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/history" element={<ServiceHistoryPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+              {/* Authenticated Profile Route */}
+              <Route element={<ProtectedRoute allowedRoles={['CUSTOMER', 'MECHANIC', 'ADMIN']} />}>
+                <Route path="/profile" element={<ProfilePage />} />
+              </Route>
 
               {/* Customer Routes */}
               <Route element={<ProtectedRoute allowedRoles={['CUSTOMER', 'ADMIN']} />}>
@@ -61,6 +68,9 @@ export function App() {
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </main>
+
+          {/* Floating WhatsApp Customer Service Widget */}
+          <WhatsAppWidget />
 
           {/* Footer */}
           <footer className="mt-8 px-4 pb-6">
