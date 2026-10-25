@@ -27,6 +27,7 @@ interface MotorSlide {
   has360: boolean;
   framesDir?: string;
   totalFrames?: number;
+  frameInterval?: number;
   alt: string;
 }
 
@@ -37,8 +38,11 @@ const MOTOR_SLIDES: MotorSlide[] = [
     sub: 'CVT',
     model: 'Yamaha NMAX Turbo 155',
     staticImage: '/images/motorcycle_matic_front.png',
-    has360: false,
-    alt: 'Motor Matic Yamaha NMAX Turbo 155',
+    has360: true,
+    framesDir: '/images/nmax-360',
+    totalFrames: 36,
+    frameInterval: 75,
+    alt: 'Motor Matic Yamaha NMAX Turbo 155 (Hover untuk Putar 360°)',
   },
   {
     category: 'bebek',
@@ -55,8 +59,11 @@ const MOTOR_SLIDES: MotorSlide[] = [
     sub: 'Manual',
     model: 'Yamaha XSR 155 Heritage',
     staticImage: '/images/motorcycle_sport_front.png',
-    has360: false,
-    alt: 'Motor Sport Yamaha XSR 155 Heritage',
+    has360: true,
+    framesDir: '/images/xsr-clean-16',
+    totalFrames: 16,
+    frameInterval: 120,
+    alt: 'Motor Sport Yamaha XSR 155 Heritage (Hover untuk Putar 360°)',
   },
 ];
 
@@ -65,10 +72,10 @@ export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [noPolisi, setNoPolisi] = useState('');
   
-  // Carousel State
+  // Carousel & 360 Hover State
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [xsrFrame, setXsrFrame] = useState(1);
+  const [isHovered, setIsHovered] = useState(false);
+  const [activeFrame, setActiveFrame] = useState(1);
   const carouselContainerRef = useRef<HTMLDivElement>(null);
 
   // Swipe / Drag gesture tracking
@@ -76,35 +83,49 @@ export const LandingPage: React.FC = () => {
   const touchEndXRef = useRef<number | null>(null);
   const isMouseDownRef = useRef(false);
 
-  // Preload all 36 frames of XSR 155 for instant buttery-smooth playback
+  // Preload all 36 frames of NMAX and 16 authentic frames of XSR
   useEffect(() => {
+    // NMAX Turbo (36 authentic factory frames)
     for (let i = 1; i <= 36; i++) {
       const img = new Image();
-      img.src = `/images/xsr-360/${i}.png`;
+      img.src = `/images/nmax-360/${i}.png`;
+    }
+    // XSR 155 (16 authentic Yamaha keyframes)
+    for (let i = 1; i <= 16; i++) {
+      const img = new Image();
+      img.src = `/images/xsr-clean-16/${i}.png`;
     }
   }, []);
 
-  // XSR 360 Frame Animation (loops 36 frames at 80ms = 2.88s full turntable cycle)
+  // Reset active frame when slide changes
   useEffect(() => {
-    if (currentIndex !== 2) return;
+    setActiveFrame(1);
+  }, [currentIndex]);
+
+  // 360 Rotation Animation on Hover
+  useEffect(() => {
+    const currentSlide = MOTOR_SLIDES[currentIndex];
+    if (!isHovered || !currentSlide.has360 || !currentSlide.totalFrames) {
+      return;
+    }
 
     const frameInterval = setInterval(() => {
-      setXsrFrame((prev) => (prev % 36) + 1);
-    }, 80);
+      setActiveFrame((prev) => (prev % currentSlide.totalFrames!) + 1);
+    }, currentSlide.frameInterval || 80);
 
     return () => clearInterval(frameInterval);
-  }, [currentIndex]);
+  }, [isHovered, currentIndex]);
 
   // Automatic slide rotation every 3 seconds (pauses on user hover/touch)
   useEffect(() => {
-    if (isPaused) return;
+    if (isHovered) return; // Jeda otomatis saat kursor diarahkan ke motor
 
     const slideTimer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % MOTOR_SLIDES.length);
     }, 3000);
 
     return () => clearInterval(slideTimer);
-  }, [currentIndex, isPaused]);
+  }, [currentIndex, isHovered]);
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % MOTOR_SLIDES.length);
@@ -118,15 +139,13 @@ export const LandingPage: React.FC = () => {
     const idx = MOTOR_SLIDES.findIndex((m) => m.category === category);
     if (idx !== -1) {
       setCurrentIndex(idx);
-      if (category === 'sport') {
-        setXsrFrame(1);
-      }
+      setActiveFrame(1);
     }
   };
 
   // Touch Swipe Handlers
   const handleTouchStart = (e: React.TouchEvent) => {
-    setIsPaused(true);
+    setIsHovered(true);
     touchStartXRef.current = e.targetTouches[0].clientX;
   };
 
@@ -145,13 +164,13 @@ export const LandingPage: React.FC = () => {
     }
     touchStartXRef.current = null;
     touchEndXRef.current = null;
-    setIsPaused(false);
+    setIsHovered(false);
   };
 
   // Mouse Drag Handlers (Desktop Swiper)
   const handleMouseDown = (e: React.MouseEvent) => {
     isMouseDownRef.current = true;
-    setIsPaused(true);
+    setIsHovered(true);
     touchStartXRef.current = e.clientX;
   };
 
@@ -172,7 +191,7 @@ export const LandingPage: React.FC = () => {
     isMouseDownRef.current = false;
     touchStartXRef.current = null;
     touchEndXRef.current = null;
-    setIsPaused(false);
+    setIsHovered(false);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -315,18 +334,28 @@ export const LandingPage: React.FC = () => {
               {/* 2. Kolom Tengah: Centerpiece Motor Swiper & 360 Turntable Showcase */}
               <div className="lg:col-span-6 flex flex-col items-center justify-center order-2 lg:order-2">
                 
-                {/* Stage Swiper Showcase (Swipeable, Auto-Slide 3s, Animasi Putar 360° XSR, Tanpa Kotak & Tanpa Badge Teks) */}
+                {/* Stage Swiper Showcase (Swipeable, Auto-Slide 3s, Putar 360° on Hover/Touch, Tanpa Kotak & Tanpa Badge Teks) */}
                 <div
                   ref={carouselContainerRef}
-                  onMouseEnter={() => setIsPaused(true)}
-                  onMouseLeave={() => setIsPaused(false)}
-                  onTouchStart={handleTouchStart}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => {
+                    setIsHovered(false);
+                    setActiveFrame(1);
+                  }}
+                  onTouchStart={(e) => {
+                    setIsHovered(true);
+                    handleTouchStart(e);
+                  }}
                   onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
+                  onTouchEnd={(e) => {
+                    setIsHovered(false);
+                    setActiveFrame(1);
+                    handleTouchEnd();
+                  }}
                   onMouseDown={handleMouseDown}
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
-                  className="relative w-full max-w-xl lg:max-w-2xl h-68 sm:h-80 md:h-92 flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
+                  className="relative w-full max-w-xl lg:max-w-2xl h-68 sm:h-80 md:h-92 flex items-center justify-center select-none cursor-grab active:cursor-grabbing group"
                 >
                   {/* Tombol Navigasi Kiri (Minimalist & Unobtrusive) */}
                   <button
@@ -344,7 +373,6 @@ export const LandingPage: React.FC = () => {
                   {/* Slides Render */}
                   {MOTOR_SLIDES.map((slide, idx) => {
                     const isActive = idx === currentIndex;
-                    const isSport360 = slide.category === 'sport';
 
                     return (
                       <div
@@ -355,12 +383,21 @@ export const LandingPage: React.FC = () => {
                             : 'opacity-0 translate-x-8 scale-95 z-0 pointer-events-none'
                         }`}
                       >
-                        {/* Crisp Studio Transparent Cutout (Pristine & Artifact-free) */}
-                        <img
-                          src={slide.staticImage}
-                          alt={slide.alt}
-                          className="w-full h-full object-contain filter drop-shadow-2xl transition-transform duration-200 pointer-events-none"
-                        />
+                        {/* Jika di-hover dan motor memiliki 360 frames: putar frame sequence! */}
+                        {isHovered && slide.has360 && slide.framesDir ? (
+                          <img
+                            src={`${slide.framesDir}/${activeFrame}.png`}
+                            alt={slide.alt}
+                            className="w-full h-full object-contain filter drop-shadow-2xl pointer-events-none"
+                          />
+                        ) : (
+                          /* Tampilan Statis Studio Bersih (Front 3/4 Asli Pabrik) */
+                          <img
+                            src={slide.staticImage}
+                            alt={slide.alt}
+                            className="w-full h-full object-contain filter drop-shadow-2xl transition-transform duration-300 pointer-events-none"
+                          />
+                        )}
                       </div>
                     );
                   })}
@@ -382,19 +419,38 @@ export const LandingPage: React.FC = () => {
                   <div className="absolute bottom-2 sm:bottom-3 w-5/6 h-6 sm:h-7 bg-slate-950/25 rounded-full blur-xl pointer-events-none z-0" />
                 </div>
 
-                {/* Minimalist Carousel Pagination Dots */}
-                <div className="flex items-center gap-2 mt-2">
-                  {MOTOR_SLIDES.map((slide, idx) => (
-                    <button
-                      key={slide.category}
-                      type="button"
-                      onClick={() => setCurrentIndex(idx)}
-                      className={`h-1.5 transition-all rounded-full ${
-                        idx === currentIndex ? 'w-8 bg-slate-900' : 'w-2 bg-slate-300 hover:bg-slate-400'
-                      }`}
-                      aria-label={`Slide ${idx + 1}`}
-                    />
-                  ))}
+                {/* Minimalist Carousel Pagination Dots & 360 Hover Indicator */}
+                <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
+                  <div className="flex items-center gap-2">
+                    {MOTOR_SLIDES.map((slide, idx) => (
+                      <button
+                        key={slide.category}
+                        type="button"
+                        onClick={() => setCurrentIndex(idx)}
+                        className={`h-1.5 transition-all rounded-full ${
+                          idx === currentIndex ? 'w-8 bg-slate-900' : 'w-2 bg-slate-300 hover:bg-slate-400'
+                        }`}
+                        aria-label={`Slide ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Indikator Hover 360 Interaktif */}
+                  {currentMotor.has360 && (
+                    <div className="transition-all duration-200">
+                      {isHovered ? (
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-red-600 bg-red-50 border border-red-200 px-3 py-1 rounded-full shadow-2xs">
+                          <RotateCw className="h-3 w-3 animate-spin text-red-600" />
+                          <span>Putar 360° Aktif</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 bg-white/80 border border-slate-200/70 px-3 py-1 rounded-full shadow-2xs">
+                          <RotateCw className="h-3 w-3 text-slate-400" />
+                          <span>Arahkan kursor untuk putar 360°</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Form Pencarian Buku Logbook Plat Nomor (Responsive & Self-Contained) */}
