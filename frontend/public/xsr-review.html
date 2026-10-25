@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Frame XSR 155 — BengkelMotor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .bg-checker {
+      background-color: #f1f5f9;
+      background-image: 
+        linear-gradient(45deg, #e2e8f0 25%, transparent 25%), 
+        linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #e2e8f0 75%), 
+        linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    }
+    .bg-dark-checker {
+      background-color: #0f172a;
+      background-image: 
+        linear-gradient(45deg, #1e293b 25%, transparent 25%), 
+        linear-gradient(-45deg, #1e293b 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #1e293b 75%), 
+        linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased min-h-screen p-4 sm:p-8">
+
+  <!-- Header -->
+  <header class="max-w-7xl mx-auto mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="inline-block text-[11px] font-black uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded mb-1">
+          Halaman Review Khusus
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          Review 36 Frame Yamaha XSR 155
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">
+          Folder aset: <code class="bg-slate-100 font-mono font-bold px-1.5 py-0.5 rounded text-red-700">frontend/public/images/xsr-review/</code>. 
+          Silakan sebutkan nomor file (contoh: <code class="font-bold">xsr_02.png</code>) yang memiliki cacat atau artifak untuk diperbaiki.
+        </p>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-bold text-slate-500 mr-1">Latar Belakang:</span>
+        <button onclick="setBg('checker')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-slate-200 hover:bg-slate-300">Papan Catur</button>
+        <button onclick="setBg('white')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white hover:bg-slate-50">Putih Bersih</button>
+        <button onclick="setBg('dark')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-slate-900 text-white hover:bg-slate-800">Gelap (Kontras)</button>
+      </div>
+    </div>
+
+    <!-- Live Scrubber Tester -->
+    <div class="mt-6 pt-6 border-t border-slate-200">
+      <div class="flex flex-col sm:flex-row items-center gap-6">
+        <div id="scrub-preview-box" class="w-64 h-48 bg-checker rounded-xl flex items-center justify-center p-2 border border-slate-300 relative shrink-0">
+          <img id="scrub-img" src="/images/xsr-review/xsr_01.png" alt="Preview Frame" class="max-w-full max-h-full object-contain pointer-events-none">
+          <span id="scrub-badge" class="absolute bottom-2 left-2 bg-slate-900/90 text-white font-mono text-[11px] font-bold px-2 py-0.5 rounded">
+            xsr_01.png
+          </span>
+        </div>
+        <div class="flex-1 w-full space-y-2">
+          <div class="flex items-center justify-between text-xs font-bold">
+            <span class="text-slate-700">Uji Putar Halus (Scrubber Frame):</span>
+            <span id="scrub-label" class="font-mono text-red-600 font-black">Frame 1 / 36</span>
+          </div>
+          <input 
+            type="range" 
+            id="frame-slider" 
+            min="1" 
+            max="36" 
+            value="1" 
+            oninput="scrub(this.value)" 
+            class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+          >
+          <div class="flex items-center gap-3 pt-2">
+            <button onclick="togglePlay()" id="play-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-1.5 px-4 rounded-lg flex items-center gap-1.5 transition">
+              <span>▶ Putar Otomatis</span>
+            </button>
+            <span class="text-[11px] text-slate-500">Geser slider ke kiri/kanan untuk melihat lompatan atau distorsi antar frame secara manual.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 36 Frames Grid -->
+  <main class="max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-4 px-1">
+      <h2 class="text-base font-bold text-slate-800">Semua 36 Frame (Urutan 1 s/d 36):</h2>
+      <span class="text-xs text-slate-500">Klik gambar manapun untuk memperbesar tampilan</span>
+    </div>
+
+    <div id="frames-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <!-- Generated via JS -->
+    </div>
+  </main>
+
+  <!-- Modal Zoom -->
+  <div id="modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" onclick="closeModal()">
+    <div class="bg-white rounded-2xl p-4 max-w-3xl w-full flex flex-col items-center" onclick="event.stopPropagation()">
+      <div class="w-full flex items-center justify-between mb-2">
+        <span id="modal-title" class="font-mono font-bold text-sm text-slate-800">xsr_01.png</span>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-800 font-black text-lg p-1">✕</button>
+      </div>
+      <div id="modal-box" class="w-full h-[60vh] bg-checker rounded-xl flex items-center justify-center p-4">
+        <img id="modal-img" src="" alt="Zoom" class="max-w-full max-h-full object-contain">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const originalKeyframes = [1, 4, 7, 10, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35];
+    let currentBg = 'checker';
+    let isPlaying = false;
+    let playTimer = null;
+
+    function renderGrid() {
+      const grid = document.getElementById('frames-grid');
+      let html = '';
+      for (let i = 1; i <= 36; i++) {
+        const numStr = i < 10 ? '0' + i : '' + i;
+        const filename = `xsr_${numStr}.png`;
+        const isOrig = originalKeyframes.includes(i);
+        const tag = isOrig 
+          ? '<span class="bg-blue-100 text-blue-700 font-bold px-1.5 py-0.5 rounded text-[10px]">Keyframe Asli</span>'
+          : '<span class="bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded text-[10px]">Generated Molab</span>';
+
+        html += `
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-2xs hover:shadow-md transition cursor-pointer" onclick="openModal('${filename}', ${i})">
+            <div class="frame-box ${currentBg === 'checker' ? 'bg-checker' : currentBg === 'white' ? 'bg-white' : 'bg-dark-checker'} h-40 flex items-center justify-center p-2 relative">
+              <img src="/images/xsr-review/${filename}" alt="${filename}" loading="lazy" class="max-w-full max-h-full object-contain pointer-events-none">
+              <span class="absolute top-2 left-2 bg-slate-900/80 text-white font-mono text-[10px] font-bold px-1.5 py-0.5 rounded">
+                #${numStr}
+              </span>
+            </div>
+            <div class="p-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span class="font-mono font-bold text-slate-800">${filename}</span>
+              ${tag}
+            </div>
+          </div>
+        `;
+      }
+      grid.innerHTML = html;
+    }
+
+    function setBg(type) {
+      currentBg = type;
+      const previewBox = document.getElementById('scrub-preview-box');
+      const modalBox = document.getElementById('modal-box');
+      
+      const cls = type === 'checker' ? 'bg-checker' : type === 'white' ? 'bg-white' : 'bg-dark-checker';
+      previewBox.className = `w-64 h-48 ${cls} rounded-xl flex items-center justify-center p-2 border border-slate-300 relative shrink-0`;
+      modalBox.className = `w-full h-[60vh] ${cls} rounded-xl flex items-center justify-center p-4`;
+      
+      renderGrid();
+    }
+
+    function scrub(val) {
+      const num = parseInt(val);
+      const numStr = num < 10 ? '0' + num : '' + num;
+      const fn = `xsr_${numStr}.png`;
+      document.getElementById('scrub-img').src = `/images/xsr-review/${fn}`;
+      document.getElementById('scrub-badge').innerText = fn;
+      document.getElementById('scrub-label').innerText = `Frame ${num} / 36 (${fn})`;
+    }
+
+    function togglePlay() {
+      const btn = document.getElementById('play-btn');
+      if (isPlaying) {
+        clearInterval(playTimer);
+        isPlaying = false;
+        btn.innerHTML = '<span>▶ Putar Otomatis</span>';
+      } else {
+        isPlaying = true;
+        btn.innerHTML = '<span>⏸ Berhenti</span>';
+        playTimer = setInterval(() => {
+          const slider = document.getElementById('frame-slider');
+          let next = (parseInt(slider.value) % 36) + 1;
+          slider.value = next;
+          scrub(next);
+        }, 100);
+      }
+    }
+
+    function openModal(fn, num) {
+      const numStr = num < 10 ? '0' + num : '' + num;
+      document.getElementById('modal-title').innerText = `${fn} (Frame #${numStr})`;
+      document.getElementById('modal-img').src = `/images/xsr-review/${fn}`;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    renderGrid();
+  </script>
+</body>
+</html>

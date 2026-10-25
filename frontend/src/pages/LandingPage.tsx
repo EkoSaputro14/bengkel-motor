@@ -55,10 +55,8 @@ const MOTOR_SLIDES: MotorSlide[] = [
     sub: 'Manual',
     model: 'Yamaha XSR 155 Heritage',
     staticImage: '/images/motorcycle_sport_front.png',
-    has360: true,
-    framesDir: '/images/xsr-360',
-    totalFrames: 36,
-    alt: 'Motor Sport Yamaha XSR 155 Heritage (Animasi 360°)',
+    has360: false,
+    alt: 'Motor Sport Yamaha XSR 155 Heritage',
   },
 ];
 
@@ -357,21 +355,12 @@ export const LandingPage: React.FC = () => {
                             : 'opacity-0 translate-x-8 scale-95 z-0 pointer-events-none'
                         }`}
                       >
-                        {/* XSR Sport: Dynamic 360-degree Turntable Sequence */}
-                        {isSport360 ? (
-                          <img
-                            src={`/images/xsr-360/${xsrFrame}.png`}
-                            alt={slide.alt}
-                            className="w-full h-full object-contain filter drop-shadow-2xl transition-transform duration-200 pointer-events-none"
-                          />
-                        ) : (
-                          /* Matic & Bebek: Crisp Studio Transparent Cutout */
-                          <img
-                            src={slide.staticImage}
-                            alt={slide.alt}
-                            className="w-full h-full object-contain filter drop-shadow-2xl transition-transform duration-200 pointer-events-none"
-                          />
-                        )}
+                        {/* Crisp Studio Transparent Cutout (Pristine & Artifact-free) */}
+                        <img
+                          src={slide.staticImage}
+                          alt={slide.alt}
+                          className="w-full h-full object-contain filter drop-shadow-2xl transition-transform duration-200 pointer-events-none"
+                        />
                       </div>
                     );
                   })}
@@ -393,7 +382,7 @@ export const LandingPage: React.FC = () => {
                   <div className="absolute bottom-2 sm:bottom-3 w-5/6 h-6 sm:h-7 bg-slate-950/25 rounded-full blur-xl pointer-events-none z-0" />
                 </div>
 
-                {/* Minimalist Carousel Pagination Dots & 360 Indicator */}
+                {/* Minimalist Carousel Pagination Dots */}
                 <div className="flex items-center gap-2 mt-2">
                   {MOTOR_SLIDES.map((slide, idx) => (
                     <button
@@ -406,12 +395,6 @@ export const LandingPage: React.FC = () => {
                       aria-label={`Slide ${idx + 1}`}
                     />
                   ))}
-                  {currentMotor.category === 'sport' && (
-                    <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-bold text-slate-500 bg-white/80 border border-slate-200 px-2 py-0.5 rounded-full shadow-2xs">
-                      <RotateCw className="h-3 w-3 text-red-600 animate-spin" style={{ animationDuration: '3s' }} />
-                      <span>360° Turntable</span>
-                    </span>
-                  )}
                 </div>
 
                 {/* Form Pencarian Buku Logbook Plat Nomor (Responsive & Self-Contained) */}
