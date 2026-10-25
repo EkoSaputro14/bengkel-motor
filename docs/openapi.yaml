@@ -1,0 +1,101 @@
+openapi: 3.0.3
+info:
+  title: Bengkel Motor REST API
+  description: >-
+    Dokumentasi spesifikasi RESTful API (API-First) untuk Sistem Informasi Booking 
+    dan Manajemen Servis Bengkel Motor (/api/v1) menggunakan Laravel Sanctum dan Role-Based Access Control (CUSTOMER, MECHANIC, ADMIN).
+  version: 1.0.0
+  contact:
+    name: Kelompok #2 - Pemrograman Web Servis
+
+servers:
+  - url: http://localhost:8000/api
+    description: Local Development Server (Laragon / Artisan Serve)
+
+tags:
+  - name: Health Check
+    description: Endpoint untuk memeriksa status operasional server API
+  - name: Auth
+    description: Autentikasi pengguna (Register, Login, Profil Me, Logout)
+  - name: Service Slots
+    description: Informasi kuota dan jadwal slot servis bengkel
+  - name: Vehicles
+    description: Manajemen data kendaraan bermotor pelanggan
+  - name: Bookings
+    description: Pemesanan jadwal servis, pembatalan, dan antrean
+  - name: Service Records
+    description: Pencatatan hasil servis oleh mekanik dan pencarian riwayat berdasarkan nomor polisi
+  - name: Admin
+    description: Endpoint khusus pengelolaan operasional oleh Administrator (role ADMIN)
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health Check
+      summary: Global Health Check
+      description: Memeriksa status kesehatan global REST API Bengkel Motor.
+      responses:
+        '200':
+          description: Server berjalan normal
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Bengkel Motor REST API is healthy and operational.
+                  data:
+                    type: object
+                    properties:
+                      app_name:
+                        type: string
+                        example: Bengkel Motor API
+                      framework:
+                        type: string
+                        example: Laravel 11.x
+                      php_version:
+                        type: string
+                        example: 8.3.0
+                      timestamp:
+                        type: string
+                        format: date-time
+                        example: '2026-10-25T20:00:00+07:00'
+
+  /v1/health:
+    get:
+      tags:
+        - Health Check
+      summary: Health Check API v1
+      description: Memeriksa status operasional khusus untuk endpoint API versi 1 (v1).
+      responses:
+        '200':
+          description: API v1 berjalan normal
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Bengkel Motor REST API v1 is operational.
+                  data:
+                    type: object
+                    properties:
+                      api_version:
+                        type: string
+                        example: v1
+                      framework:
+                        type: string
+                        example: Laravel 11.x
+                      timestamp:
+                        type: string
+                        format: date-time
+                        example: '2026-10-25T20:00:00+07:00'
