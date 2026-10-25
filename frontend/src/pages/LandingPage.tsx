@@ -60,9 +60,9 @@ const MOTOR_SLIDES: MotorSlide[] = [
     model: 'Yamaha XSR 155 Heritage',
     staticImage: '/images/motorcycle_sport_front.png',
     has360: true,
-    framesDir: '/images/xsr-clean-16',
-    totalFrames: 16,
-    frameInterval: 120,
+    framesDir: '/images/xsr-360',
+    totalFrames: 36,
+    frameInterval: 80,
     alt: 'Motor Sport Yamaha XSR 155 Heritage (Hover untuk Putar 360°)',
   },
 ];
@@ -83,17 +83,17 @@ export const LandingPage: React.FC = () => {
   const touchEndXRef = useRef<number | null>(null);
   const isMouseDownRef = useRef(false);
 
-  // Preload all 36 frames of NMAX and 16 authentic frames of XSR
+  // Preload all 36 frames of NMAX and 36 frames of XSR (original animation)
   useEffect(() => {
     // NMAX Turbo (36 authentic factory frames)
     for (let i = 1; i <= 36; i++) {
       const img = new Image();
       img.src = `/images/nmax-360/${i}.png`;
     }
-    // XSR 155 (16 authentic Yamaha keyframes)
-    for (let i = 1; i <= 16; i++) {
+    // XSR 155 (Original 36 frames)
+    for (let i = 1; i <= 36; i++) {
       const img = new Image();
-      img.src = `/images/xsr-clean-16/${i}.png`;
+      img.src = `/images/xsr-360/${i}.png`;
     }
   }, []);
 
