@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Wrench,
@@ -15,11 +15,52 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+const MOTOR_CYCLES = [
+  {
+    category: 'matic' as const,
+    name: 'Matic',
+    sub: 'CVT',
+    image: '/images/motorcycle_matic_front.png',
+    alt: 'Motor Matic (Yamaha NMAX Turbo 155)',
+  },
+  {
+    category: 'bebek' as const,
+    name: 'Bebek',
+    sub: 'Cub',
+    image: '/images/motorcycle_bebek_front.png',
+    alt: 'Motor Bebek (Yamaha Jupiter Z1 115)',
+  },
+  {
+    category: 'sport' as const,
+    name: 'Sport',
+    sub: 'Manual',
+    image: '/images/motorcycle_sport_front.png',
+    alt: 'Motor Sport (Yamaha XSR 155)',
+  },
+];
+
 export const LandingPage: React.FC = () => {
   const [noPolisi, setNoPolisi] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'matic' | 'bebek' | 'sport'>('matic');
+  const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  // Animasi otomatis berganti setiap 3 detik
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % MOTOR_CYCLES.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [currentIndex]);
+
+  const activeCategory = MOTOR_CYCLES[currentIndex].category;
+
+  const handleCategoryClick = (category: 'matic' | 'bebek' | 'sport') => {
+    const idx = MOTOR_CYCLES.findIndex((m) => m.category === category);
+    if (idx !== -1) {
+      setCurrentIndex(idx);
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,47 +108,47 @@ export const LandingPage: React.FC = () => {
 
           <div className="relative z-10 space-y-8">
             
-            {/* Category Segmented Control (Estetik, Modern, Bebas Kusut) */}
+            {/* Category Segmented Control (Sinkron Otomatis dengan Animasi Motor) */}
             <div className="w-full max-w-xl mx-auto bg-slate-200/80 p-1.5 rounded-2xl border border-slate-300/70 shadow-inner">
               <div className="grid grid-cols-3 gap-1 text-xs">
                 <button
                   type="button"
-                  onClick={() => setSelectedCategory('matic')}
+                  onClick={() => handleCategoryClick('matic')}
                   className={`py-2 px-2 rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 ${
-                    selectedCategory === 'matic'
+                    activeCategory === 'matic'
                       ? 'bg-white text-slate-950 shadow-sm border border-slate-300/40'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-white/40'
                   }`}
                 >
-                  <Disc className={`h-4 w-4 shrink-0 ${selectedCategory === 'matic' ? 'text-red-600' : 'text-slate-500'}`} />
+                  <Disc className={`h-4 w-4 shrink-0 ${activeCategory === 'matic' ? 'text-red-600' : 'text-slate-500'}`} />
                   <span className="tracking-tight">Matic</span>
                   <span className="text-[10px] uppercase font-mono px-1 py-0.2 rounded bg-slate-100 text-slate-500 font-normal">CVT</span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setSelectedCategory('bebek')}
+                  onClick={() => handleCategoryClick('bebek')}
                   className={`py-2 px-2 rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 ${
-                    selectedCategory === 'bebek'
+                    activeCategory === 'bebek'
                       ? 'bg-white text-slate-950 shadow-sm border border-slate-300/40'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-white/40'
                   }`}
                 >
-                  <Bike className={`h-4 w-4 shrink-0 ${selectedCategory === 'bebek' ? 'text-red-600' : 'text-slate-500'}`} />
+                  <Bike className={`h-4 w-4 shrink-0 ${activeCategory === 'bebek' ? 'text-red-600' : 'text-slate-500'}`} />
                   <span className="tracking-tight">Bebek</span>
                   <span className="text-[10px] uppercase font-mono px-1 py-0.2 rounded bg-slate-100 text-slate-500 font-normal">Cub</span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setSelectedCategory('sport')}
+                  onClick={() => handleCategoryClick('sport')}
                   className={`py-2 px-2 rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 ${
-                    selectedCategory === 'sport'
+                    activeCategory === 'sport'
                       ? 'bg-white text-slate-950 shadow-sm border border-slate-300/40'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-white/40'
                   }`}
                 >
-                  <Gauge className={`h-4 w-4 shrink-0 ${selectedCategory === 'sport' ? 'text-red-600' : 'text-slate-500'}`} />
+                  <Gauge className={`h-4 w-4 shrink-0 ${activeCategory === 'sport' ? 'text-red-600' : 'text-slate-500'}`} />
                   <span className="tracking-tight">Sport</span>
                   <span className="text-[10px] uppercase font-mono px-1 py-0.2 rounded bg-slate-100 text-slate-500 font-normal">Manual</span>
                 </button>
@@ -117,7 +158,7 @@ export const LandingPage: React.FC = () => {
             {/* 3-Column Focal Layout khas Gambar 1 */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               
-              {/* 1. Kolom Kiri: Metric Spesiikasi & Kapasitas Bengkel */}
+              {/* 1. Kolom Kiri: Metric Spesifikasi & Kapasitas Bengkel */}
               <div className="lg:col-span-3 space-y-6 text-left order-3 lg:order-1">
                 <div className="border-l-2 border-slate-400 pl-4 space-y-1">
                   <div className="text-3xl font-black font-mono tracking-tight text-slate-950">
@@ -159,15 +200,29 @@ export const LandingPage: React.FC = () => {
               {/* 2. Kolom Tengah: Centerpiece Motor Focal & Plat Checker */}
               <div className="lg:col-span-6 flex flex-col items-center justify-center order-2 lg:order-2">
                 
-                {/* Visual Focal Motor Nyata (Front 3/4 Serong ke Depan - Ukuran Pas & Dominan) */}
-                <div className="relative w-full max-w-xl lg:max-w-2xl flex items-center justify-center py-2 sm:py-4">
-                  <img
-                    src="/images/motorcycle_matic_front.png"
-                    alt="Motor Matic Showcase (Yamaha NMAX Turbo / Vario 160)"
-                    className="w-full h-auto max-h-64 sm:max-h-76 md:max-h-88 object-contain filter drop-shadow-2xl relative z-10 transition-transform duration-300 hover:scale-105"
-                  />
-                  {/* Subtle realistic ground shadow underneath the bike */}
-                  <div className="absolute bottom-1 sm:bottom-2 w-5/6 h-6 sm:h-7 bg-slate-950/25 rounded-full blur-xl pointer-events-none" />
+                {/* Visual Focal Centerpiece: Berganti halus setiap 3 detik (Arah Selaras, Bebas Kotak, Tanpa Badge Nama) */}
+                <div className="relative w-full max-w-xl lg:max-w-2xl h-64 sm:h-76 md:h-88 flex items-center justify-center py-2 sm:py-4">
+                  {MOTOR_CYCLES.map((motor, idx) => {
+                    const isActive = idx === currentIndex;
+                    return (
+                      <div
+                        key={motor.category}
+                        className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ease-in-out ${
+                          isActive
+                            ? 'opacity-100 translate-x-0 scale-100 z-10 pointer-events-auto'
+                            : 'opacity-0 translate-x-6 scale-95 z-0 pointer-events-none'
+                        }`}
+                      >
+                        <img
+                          src={motor.image}
+                          alt={motor.alt}
+                          className="w-full h-full object-contain filter drop-shadow-2xl transition-transform duration-300 hover:scale-105"
+                        />
+                      </div>
+                    );
+                  })}
+                  {/* Subtle realistic ground shadow underneath the bike (Zero boxy artifacts) */}
+                  <div className="absolute bottom-1 sm:bottom-2 w-5/6 h-6 sm:h-7 bg-slate-950/25 rounded-full blur-xl pointer-events-none z-0" />
                 </div>
 
                 {/* Form Pencarian Buku Logbook Plat Nomor (Responsive & Self-Contained) */}
