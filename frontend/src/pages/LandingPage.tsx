@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Wrench,
@@ -11,67 +11,184 @@ import {
   ShieldCheck,
   Disc,
   Bike,
-  Gauge
+  Gauge,
+  RotateCw,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const MOTOR_CYCLES = [
+interface MotorSlide {
+  category: 'matic' | 'bebek' | 'sport';
+  name: string;
+  sub: string;
+  model: string;
+  staticImage: string;
+  has360: boolean;
+  framesDir?: string;
+  totalFrames?: number;
+  alt: string;
+}
+
+const MOTOR_SLIDES: MotorSlide[] = [
   {
-    category: 'matic' as const,
+    category: 'matic',
     name: 'Matic',
     sub: 'CVT',
-    image: '/images/motorcycle_matic_front.png',
-    alt: 'Motor Matic (Yamaha NMAX Turbo 155)',
+    model: 'Yamaha NMAX Turbo 155',
+    staticImage: '/images/motorcycle_matic_front.png',
+    has360: false,
+    alt: 'Motor Matic Yamaha NMAX Turbo 155',
   },
   {
-    category: 'bebek' as const,
+    category: 'bebek',
     name: 'Bebek',
     sub: 'Cub',
-    image: '/images/motorcycle_bebek_front.png',
-    alt: 'Motor Bebek (Yamaha Jupiter Z1 115)',
+    model: 'Yamaha Jupiter Z1 115',
+    staticImage: '/images/motorcycle_bebek_front.png',
+    has360: false,
+    alt: 'Motor Bebek Yamaha Jupiter Z1 115',
   },
   {
-    category: 'sport' as const,
+    category: 'sport',
     name: 'Sport',
     sub: 'Manual',
-    image: '/images/motorcycle_sport_front.png',
-    alt: 'Motor Sport (Yamaha XSR 155)',
+    model: 'Yamaha XSR 155 Heritage',
+    staticImage: '/images/motorcycle_sport_front.png',
+    has360: true,
+    framesDir: '/images/xsr-360',
+    totalFrames: 36,
+    alt: 'Motor Sport Yamaha XSR 155 Heritage (Animasi 360°)',
   },
 ];
 
 export const LandingPage: React.FC = () => {
-  const [noPolisi, setNoPolisi] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const navigate = useNavigate();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const [noPolisi, setNoPolisi] = useState('');
+  
+  // Carousel State
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [xsrFrame, setXsrFrame] = useState(1);
+  const carouselContainerRef = useRef<HTMLDivElement>(null);
 
-  // Animasi otomatis berganti setiap 3 detik
+  // Swipe / Drag gesture tracking
+  const touchStartXRef = useRef<number | null>(null);
+  const touchEndXRef = useRef<number | null>(null);
+  const isMouseDownRef = useRef(false);
+
+  // Preload all 36 frames of XSR 155 for instant buttery-smooth playback
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % MOTOR_CYCLES.length);
-    }, 3000);
-    return () => clearInterval(timer);
+    for (let i = 1; i <= 36; i++) {
+      const img = new Image();
+      img.src = `/images/xsr-360/${i}.png`;
+    }
+  }, []);
+
+  // XSR 360 Frame Animation (loops 36 frames at 80ms = 2.88s full turntable cycle)
+  useEffect(() => {
+    if (currentIndex !== 2) return;
+
+    const frameInterval = setInterval(() => {
+      setXsrFrame((prev) => (prev % 36) + 1);
+    }, 80);
+
+    return () => clearInterval(frameInterval);
   }, [currentIndex]);
 
-  const activeCategory = MOTOR_CYCLES[currentIndex].category;
+  // Automatic slide rotation every 3 seconds (pauses on user hover/touch)
+  useEffect(() => {
+    if (isPaused) return;
+
+    const slideTimer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % MOTOR_SLIDES.length);
+    }, 3000);
+
+    return () => clearInterval(slideTimer);
+  }, [currentIndex, isPaused]);
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % MOTOR_SLIDES.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev - 1 + MOTOR_SLIDES.length) % MOTOR_SLIDES.length);
+  };
 
   const handleCategoryClick = (category: 'matic' | 'bebek' | 'sport') => {
-    const idx = MOTOR_CYCLES.findIndex((m) => m.category === category);
+    const idx = MOTOR_SLIDES.findIndex((m) => m.category === category);
     if (idx !== -1) {
       setCurrentIndex(idx);
+      if (category === 'sport') {
+        setXsrFrame(1);
+      }
     }
+  };
+
+  // Touch Swipe Handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsPaused(true);
+    touchStartXRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndXRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartXRef.current !== null && touchEndXRef.current !== null) {
+      const distance = touchStartXRef.current - touchEndXRef.current;
+      if (distance > 45) {
+        nextSlide();
+      } else if (distance < -45) {
+        prevSlide();
+      }
+    }
+    touchStartXRef.current = null;
+    touchEndXRef.current = null;
+    setIsPaused(false);
+  };
+
+  // Mouse Drag Handlers (Desktop Swiper)
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isMouseDownRef.current = true;
+    setIsPaused(true);
+    touchStartXRef.current = e.clientX;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isMouseDownRef.current) return;
+    touchEndXRef.current = e.clientX;
+  };
+
+  const handleMouseUp = () => {
+    if (isMouseDownRef.current && touchStartXRef.current !== null && touchEndXRef.current !== null) {
+      const distance = touchStartXRef.current - touchEndXRef.current;
+      if (distance > 45) {
+        nextSlide();
+      } else if (distance < -45) {
+        prevSlide();
+      }
+    }
+    isMouseDownRef.current = false;
+    touchStartXRef.current = null;
+    touchEndXRef.current = null;
+    setIsPaused(false);
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (noPolisi.trim()) {
-      navigate(`/history?no_polisi=${encodeURIComponent(noPolisi.trim().toUpperCase())}`);
+    const plat = noPolisi.trim().toUpperCase();
+    if (plat) {
+      navigate(`/history?no_polisi=${encodeURIComponent(plat)}`);
     }
   };
 
+  const currentMotor = MOTOR_SLIDES[currentIndex];
+
   return (
     <div className="min-h-screen bg-[#ECEEF2] text-slate-900 selection:bg-red-500 selection:text-white pb-20">
-      
       {/* ═══ TOP OPERATIONAL STRIP (Pill style like Gambar 1 - Responsive) ═══ */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         <div className="bg-white/90 backdrop-blur-md border border-slate-300/80 rounded-2xl sm:rounded-full py-2.5 px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-2 shadow-sm text-xs">
@@ -115,12 +232,12 @@ export const LandingPage: React.FC = () => {
                   type="button"
                   onClick={() => handleCategoryClick('matic')}
                   className={`py-2 px-2 rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 ${
-                    activeCategory === 'matic'
+                    currentMotor.category === 'matic'
                       ? 'bg-white text-slate-950 shadow-sm border border-slate-300/40'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-white/40'
                   }`}
                 >
-                  <Disc className={`h-4 w-4 shrink-0 ${activeCategory === 'matic' ? 'text-red-600' : 'text-slate-500'}`} />
+                  <Disc className={`h-4 w-4 shrink-0 ${currentMotor.category === 'matic' ? 'text-red-600' : 'text-slate-500'}`} />
                   <span className="tracking-tight">Matic</span>
                   <span className="text-[10px] uppercase font-mono px-1 py-0.2 rounded bg-slate-100 text-slate-500 font-normal">CVT</span>
                 </button>
@@ -129,12 +246,12 @@ export const LandingPage: React.FC = () => {
                   type="button"
                   onClick={() => handleCategoryClick('bebek')}
                   className={`py-2 px-2 rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 ${
-                    activeCategory === 'bebek'
+                    currentMotor.category === 'bebek'
                       ? 'bg-white text-slate-950 shadow-sm border border-slate-300/40'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-white/40'
                   }`}
                 >
-                  <Bike className={`h-4 w-4 shrink-0 ${activeCategory === 'bebek' ? 'text-red-600' : 'text-slate-500'}`} />
+                  <Bike className={`h-4 w-4 shrink-0 ${currentMotor.category === 'bebek' ? 'text-red-600' : 'text-slate-500'}`} />
                   <span className="tracking-tight">Bebek</span>
                   <span className="text-[10px] uppercase font-mono px-1 py-0.2 rounded bg-slate-100 text-slate-500 font-normal">Cub</span>
                 </button>
@@ -143,12 +260,12 @@ export const LandingPage: React.FC = () => {
                   type="button"
                   onClick={() => handleCategoryClick('sport')}
                   className={`py-2 px-2 rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 ${
-                    activeCategory === 'sport'
+                    currentMotor.category === 'sport'
                       ? 'bg-white text-slate-950 shadow-sm border border-slate-300/40'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-white/40'
                   }`}
                 >
-                  <Gauge className={`h-4 w-4 shrink-0 ${activeCategory === 'sport' ? 'text-red-600' : 'text-slate-500'}`} />
+                  <Gauge className={`h-4 w-4 shrink-0 ${currentMotor.category === 'sport' ? 'text-red-600' : 'text-slate-500'}`} />
                   <span className="tracking-tight">Sport</span>
                   <span className="text-[10px] uppercase font-mono px-1 py-0.2 rounded bg-slate-100 text-slate-500 font-normal">Manual</span>
                 </button>
@@ -197,32 +314,104 @@ export const LandingPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* 2. Kolom Tengah: Centerpiece Motor Focal & Plat Checker */}
+              {/* 2. Kolom Tengah: Centerpiece Motor Swiper & 360 Turntable Showcase */}
               <div className="lg:col-span-6 flex flex-col items-center justify-center order-2 lg:order-2">
                 
-                {/* Visual Focal Centerpiece: Berganti halus setiap 3 detik (Arah Selaras, Bebas Kotak, Tanpa Badge Nama) */}
-                <div className="relative w-full max-w-xl lg:max-w-2xl h-64 sm:h-76 md:h-88 flex items-center justify-center py-2 sm:py-4">
-                  {MOTOR_CYCLES.map((motor, idx) => {
+                {/* Stage Swiper Showcase (Swipeable, Auto-Slide 3s, Animasi Putar 360° XSR, Tanpa Kotak & Tanpa Badge Teks) */}
+                <div
+                  ref={carouselContainerRef}
+                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseLeave={() => setIsPaused(false)}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  className="relative w-full max-w-xl lg:max-w-2xl h-68 sm:h-80 md:h-92 flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
+                >
+                  {/* Tombol Navigasi Kiri (Minimalist & Unobtrusive) */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      prevSlide();
+                    }}
+                    className="absolute left-0 z-30 p-2 sm:p-2.5 rounded-full bg-white/80 hover:bg-white text-slate-700 shadow-sm border border-slate-200/60 backdrop-blur-xs transition hover:scale-105 active:scale-95"
+                    aria-label="Previous Motor"
+                  >
+                    <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </button>
+
+                  {/* Slides Render */}
+                  {MOTOR_SLIDES.map((slide, idx) => {
                     const isActive = idx === currentIndex;
+                    const isSport360 = slide.category === 'sport';
+
                     return (
                       <div
-                        key={motor.category}
+                        key={slide.category}
                         className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ease-in-out ${
                           isActive
                             ? 'opacity-100 translate-x-0 scale-100 z-10 pointer-events-auto'
-                            : 'opacity-0 translate-x-6 scale-95 z-0 pointer-events-none'
+                            : 'opacity-0 translate-x-8 scale-95 z-0 pointer-events-none'
                         }`}
                       >
-                        <img
-                          src={motor.image}
-                          alt={motor.alt}
-                          className="w-full h-full object-contain filter drop-shadow-2xl transition-transform duration-300 hover:scale-105"
-                        />
+                        {/* XSR Sport: Dynamic 360-degree Turntable Sequence */}
+                        {isSport360 ? (
+                          <img
+                            src={`/images/xsr-360/${xsrFrame}.png`}
+                            alt={slide.alt}
+                            className="w-full h-full object-contain filter drop-shadow-2xl transition-transform duration-200 pointer-events-none"
+                          />
+                        ) : (
+                          /* Matic & Bebek: Crisp Studio Transparent Cutout */
+                          <img
+                            src={slide.staticImage}
+                            alt={slide.alt}
+                            className="w-full h-full object-contain filter drop-shadow-2xl transition-transform duration-200 pointer-events-none"
+                          />
+                        )}
                       </div>
                     );
                   })}
-                  {/* Subtle realistic ground shadow underneath the bike (Zero boxy artifacts) */}
-                  <div className="absolute bottom-1 sm:bottom-2 w-5/6 h-6 sm:h-7 bg-slate-950/25 rounded-full blur-xl pointer-events-none z-0" />
+
+                  {/* Tombol Navigasi Kanan (Minimalist & Unobtrusive) */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      nextSlide();
+                    }}
+                    className="absolute right-0 z-30 p-2 sm:p-2.5 rounded-full bg-white/80 hover:bg-white text-slate-700 shadow-sm border border-slate-200/60 backdrop-blur-xs transition hover:scale-105 active:scale-95"
+                    aria-label="Next Motor"
+                  >
+                    <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </button>
+
+                  {/* Diffused Ground Shadow (Alami di Bawah Ban, Tanpa Bounding Box Kotak) */}
+                  <div className="absolute bottom-2 sm:bottom-3 w-5/6 h-6 sm:h-7 bg-slate-950/25 rounded-full blur-xl pointer-events-none z-0" />
+                </div>
+
+                {/* Minimalist Carousel Pagination Dots & 360 Indicator */}
+                <div className="flex items-center gap-2 mt-2">
+                  {MOTOR_SLIDES.map((slide, idx) => (
+                    <button
+                      key={slide.category}
+                      type="button"
+                      onClick={() => setCurrentIndex(idx)}
+                      className={`h-1.5 transition-all rounded-full ${
+                        idx === currentIndex ? 'w-8 bg-slate-900' : 'w-2 bg-slate-300 hover:bg-slate-400'
+                      }`}
+                      aria-label={`Slide ${idx + 1}`}
+                    />
+                  ))}
+                  {currentMotor.category === 'sport' && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-bold text-slate-500 bg-white/80 border border-slate-200 px-2 py-0.5 rounded-full shadow-2xs">
+                      <RotateCw className="h-3 w-3 text-red-600 animate-spin" style={{ animationDuration: '3s' }} />
+                      <span>360° Turntable</span>
+                    </span>
+                  )}
                 </div>
 
                 {/* Form Pencarian Buku Logbook Plat Nomor (Responsive & Self-Contained) */}
@@ -319,12 +508,12 @@ export const LandingPage: React.FC = () => {
         <div className="bg-white/80 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-800">Akun Pengujian Praktikum:</span>
-            <span className="text-slate-500 font-mono">(Password: password123)</span>
+            <span className="text-slate-500 font-mono\">(Password: password123)</span>
           </div>
           <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
-            <span className="bg-slate-100 px-2 py-1 rounded border border-slate-200">Customer: eko@bengkelmotor.test</span>
-            <span className="bg-slate-100 px-2 py-1 rounded border border-slate-200">Mechanic: mechanic@bengkelmotor.test</span>
-            <span className="bg-slate-100 px-2 py-1 rounded border border-slate-200">Admin: admin@bengkelmotor.test</span>
+            <span className="bg-slate-100 px-2 py-1 rounded border border-slate-200">Customer: budi@example.com</span>
+            <span className="bg-slate-100 px-2 py-1 rounded border border-slate-200">Mechanic: agus@example.com</span>
+            <span className="bg-slate-100 px-2 py-1 rounded border border-slate-200">Admin: admin@example.com</span>
           </div>
         </div>
       </footer>
