@@ -15,6 +15,10 @@ import {
   RotateCw,
   ChevronLeft,
   ChevronRight,
+  Package,
+  CheckCircle2,
+  Sparkles,
+  Tag,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -30,6 +34,120 @@ interface MotorSlide {
   frameInterval?: number;
   alt: string;
 }
+
+interface SparepartItem {
+  id: string;
+  name: string;
+  category: 'pelumas' | 'pengereman' | 'pengapian' | 'drivetrain';
+  categoryLabel: string;
+  price: string;
+  compatibility: string;
+  image: string;
+  badge: string;
+  desc: string;
+}
+
+const SPAREPARTS_DATA: SparepartItem[] = [
+  {
+    id: 'oli-mesin',
+    name: 'Pelumas Mesin 10W-40 Synthetic',
+    category: 'pelumas',
+    categoryLabel: 'Pelumas & Filter',
+    price: 'Rp 55.000 - Rp 95.000',
+    compatibility: 'Matic, Bebek, Sport (Yamalube / MPX / Shell)',
+    image: '/images/spareparts/oli_motor.webp',
+    badge: '100% Original',
+    desc: 'Melindungi mesin dari gesekan ekstrem, menjaga suhu optimal dan tarikan responsif.',
+  },
+  {
+    id: 'kampas-rem',
+    name: 'Kampas Rem Cakram & Tromol Asli',
+    category: 'pengereman',
+    categoryLabel: 'Pengereman & Ban',
+    price: 'Rp 45.000 - Rp 85.000',
+    compatibility: 'Depan & Belakang Semua Tipe Motor',
+    image: '/images/spareparts/kampas_rem.webp',
+    badge: 'Garansi Pakem',
+    desc: 'Daya cengkeram optimal tanpa merusak piringan cakram, tahan panas tinggi.',
+  },
+  {
+    id: 'busi-iridium',
+    name: 'Busi NGK Iridium & Standard OEM',
+    category: 'pengapian',
+    categoryLabel: 'Pengapian & Kelistrikan',
+    price: 'Rp 25.000 - Rp 85.000',
+    compatibility: 'Universal Matic, Bebek, & Sport',
+    image: '/images/spareparts/busi.webp',
+    badge: 'Api Stabil',
+    desc: 'Pengapian lebih fokus dan efisien, hemat bahan bakar dan mudah starter pagi.',
+  },
+  {
+    id: 'piringan-cakram',
+    name: 'Piringan Cakram Rem Disc Brake',
+    category: 'pengereman',
+    categoryLabel: 'Pengereman & Ban',
+    price: 'Rp 120.000 - Rp 250.000',
+    compatibility: 'Honda, Yamaha, Suzuki, Kawasaki',
+    image: '/images/spareparts/piringan_cakram.webp',
+    badge: 'Anti Karat',
+    desc: 'Baja tahan karat berkekuatan tinggi dengan ventilasi pendinginan cepat.',
+  },
+  {
+    id: 'ban-motor',
+    name: 'Ban Luar Tubeless Soft Compound',
+    category: 'pengereman',
+    categoryLabel: 'Pengereman & Ban',
+    price: 'Rp 180.000 - Rp 450.000',
+    compatibility: 'Ring 12, 13, 14, & 17 (Pirelli / IRC / Maxxis)',
+    image: '/images/spareparts/ban_motor.webp',
+    badge: 'Grip Basah/Kering',
+    desc: 'Alur pembuang air presisi dengan kompon awet untuk jalanan perkotaan.',
+  },
+  {
+    id: 'shockbreaker',
+    name: 'Suspensi Shockbreaker & Monoshock',
+    category: 'drivetrain',
+    categoryLabel: 'Drivetrain & Suspensi',
+    price: 'Rp 280.000 - Rp 650.000',
+    compatibility: 'Matic & Bebek (Twin Shock / Monoshock)',
+    image: '/images/spareparts/shockbreaker.webp',
+    badge: 'Rebound Empuk',
+    desc: 'Redaman getaran maksimal untuk kenyamanan berkendara harian dan muatan berat.',
+  },
+  {
+    id: 'filter-oli',
+    name: 'Filter Oli Mesin & Saringan Udara',
+    category: 'pelumas',
+    categoryLabel: 'Pelumas & Filter',
+    price: 'Rp 25.000 - Rp 55.000',
+    compatibility: 'Injeksi & Karburator',
+    image: '/images/spareparts/filter_oli.webp',
+    badge: 'Filtrasi Mikro',
+    desc: 'Menyaring partikel gram besi dan debu halus agar ruang bakar tetap bersih.',
+  },
+  {
+    id: 'aki-motor',
+    name: 'Aki Kering Maintenance Free (MF)',
+    category: 'pengapian',
+    categoryLabel: 'Pengapian & Kelistrikan',
+    price: 'Rp 195.000 - Rp 320.000',
+    compatibility: 'GS Astra, Yuasa, Motobatt',
+    image: '/images/spareparts/aki_motor.webp',
+    badge: 'Garansi 6 Bulan',
+    desc: 'Arus start kuat dan stabil, langsung pasang tanpa perlu isi air aki.',
+  },
+  {
+    id: 'rantai-motor',
+    name: 'Rantai & Gir Paket Heavy Duty Kit',
+    category: 'drivetrain',
+    categoryLabel: 'Drivetrain & Suspensi',
+    price: 'Rp 150.000 - Rp 280.000',
+    compatibility: 'Tipe Bebek & Sport (428 / 520)',
+    image: '/images/spareparts/rantai_motor.webp',
+    badge: 'Presisi Baja',
+    desc: 'Material baja hardened anti mulur dengan pelumasan tahan lama.',
+  },
+];
 
 const MOTOR_SLIDES: MotorSlide[] = [
   {
@@ -82,6 +200,13 @@ export const LandingPage: React.FC = () => {
   const touchStartXRef = useRef<number | null>(null);
   const touchEndXRef = useRef<number | null>(null);
   const isMouseDownRef = useRef(false);
+
+  const [selectedSparepartCat, setSelectedSparepartCat] = useState<string>('all');
+
+  const filteredSpareparts =
+    selectedSparepartCat === 'all'
+      ? SPAREPARTS_DATA
+      : SPAREPARTS_DATA.filter((s) => s.category === selectedSparepartCat);
 
   // Preload all 36 frames of NMAX and 36 frames of XSR (original animation)
   useEffect(() => {
@@ -539,6 +664,141 @@ export const LandingPage: React.FC = () => {
             </div>
 
           </div>
+        </div>
+      </section>
+
+      {/* ═══ Section Katalog Suku Cadang & Sparepart Asli ═══ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 sm:mt-20">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 sm:p-10 shadow-soft space-y-8">
+          
+          {/* Header Section */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-100 pb-6">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-red-600 bg-red-50 border border-red-200/60 px-2.5 py-0.5 rounded-full">
+                <Package className="h-3.5 w-3.5" />
+                <span>Katalog Suku Cadang Resmi</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                SPAREPART &amp; OLI ORIGINAL
+              </h2>
+              <p className="text-sm text-slate-600 max-w-2xl">
+                Jaminan 100% suku cadang resmi dan pelumas berkualitas standar pabrikan untuk menjaga performa mesin, keamanan pengereman, dan keawetan motor Anda.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3.5 py-2 rounded-2xl shrink-0">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+              <span>Garansi Pasang di Bengkel</span>
+            </div>
+          </div>
+
+          {/* Filter Categories */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            {[
+              { id: 'all', label: 'Semua Sparepart' },
+              { id: 'pelumas', label: 'Pelumas & Filter' },
+              { id: 'pengereman', label: 'Pengereman & Ban' },
+              { id: 'pengapian', label: 'Pengapian & Aki' },
+              { id: 'drivetrain', label: 'Drivetrain & Suspensi' },
+            ].map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedSparepartCat(cat.id)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 active:scale-95 ${
+                  selectedSparepartCat === cat.id
+                    ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Product Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredSpareparts.map((item) => (
+              <div
+                key={item.id}
+                className="group bg-white border border-slate-200/90 rounded-2xl overflow-hidden hover:border-slate-900/30 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  {/* Image Container with Zoom effect */}
+                  <div className="relative aspect-square sm:aspect-[4/3] bg-slate-50 overflow-hidden flex items-center justify-center p-4 border-b border-slate-100">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs border border-slate-200 text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-2xs">
+                      {item.badge}
+                    </div>
+                    <div className="absolute top-3 right-3 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-xs">
+                      {item.categoryLabel}
+                    </div>
+                  </div>
+
+                  {/* Details */}
+                  <div className="p-4 space-y-2">
+                    <div className="font-extrabold text-slate-900 text-base group-hover:text-red-600 transition-colors">
+                      {item.name}
+                    </div>
+                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                      {item.desc}
+                    </p>
+                    <div className="text-[11px] font-medium text-slate-500 bg-slate-50 rounded-lg p-2 border border-slate-100">
+                      <span className="font-bold text-slate-700">Kompatibel: </span>
+                      <span>{item.compatibility}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Price & Booking CTA */}
+                <div className="p-4 pt-0">
+                  <div className="border-t border-slate-100 pt-3 flex items-center justify-between gap-2">
+                    <div>
+                      <div className="text-[10px] uppercase font-bold text-slate-400">Kisaran Harga</div>
+                      <div className="text-sm font-extrabold text-slate-900 font-mono">
+                        {item.price}
+                      </div>
+                    </div>
+                    <Link
+                      to={user ? '/customer/booking' : '/login'}
+                      className="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-xs active:scale-95 shrink-0"
+                    >
+                      <span>Pesan Servis</span>
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom Banner */}
+          <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 sm:p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3 text-center sm:text-left">
+              <div className="w-10 h-10 rounded-xl bg-red-600/30 border border-red-500/40 flex items-center justify-center shrink-0">
+                <Wrench className="h-5 w-5 text-red-400" />
+              </div>
+              <div>
+                <div className="font-bold text-sm">Butuh Sparepart Lain yang Tidak Ada di Daftar?</div>
+                <div className="text-xs text-slate-300">Hubungi kami melalui WhatsApp untuk cek ketersediaan stok suku cadang khusus.</div>
+              </div>
+            </div>
+            <a
+              href="https://wa.me/6281234567890?text=Halo%20Admin%20BengkelMotor,%20saya%20ingin%20tanya%20ketersediaan%20sparepart"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shrink-0 shadow-lg shadow-emerald-500/20 active:scale-95"
+            >
+              <span>Tanya CS WhatsApp</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+          </div>
+
         </div>
       </section>
 
