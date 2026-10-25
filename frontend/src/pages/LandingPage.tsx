@@ -668,7 +668,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ═══ Section Katalog Suku Cadang & Sparepart Asli ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 sm:mt-20">
+      <section id="katalog-sparepart" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 sm:mt-20 scroll-mt-24">
         <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 sm:p-10 shadow-soft space-y-8">
           
           {/* Header Section */}

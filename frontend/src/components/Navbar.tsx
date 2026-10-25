@@ -14,6 +14,7 @@ import {
   User,
   Settings,
   ChevronDown,
+  Package,
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -169,6 +170,12 @@ export const Navbar: React.FC = () => {
                       <span>Riwayat</span>
                     </Link>
 
+                    {/* Katalog Suku Cadang & Sparepart */}
+                    <a href="/#katalog-sparepart" className={linkCls('/#katalog-sparepart')}>
+                      <Package className="h-4 w-4" />
+                      <span>Sparepart</span>
+                    </a>
+
                     <div className="h-6 w-px bg-slate-200 mx-1.5" />
 
                     {/* Simplified User Profile Dropdown Pill */}
@@ -238,6 +245,13 @@ export const Navbar: React.FC = () => {
                   </>
                 ) : (
                   <div className="flex items-center gap-2">
+                    <a
+                      href="/#katalog-sparepart"
+                      className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3.5 py-2 rounded-full hover:bg-slate-100/80 transition flex items-center gap-1.5"
+                    >
+                      <Package className="h-4 w-4" />
+                      <span>Sparepart</span>
+                    </a>
                     <Link
                       to="/history"
                       className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3.5 py-2 rounded-full hover:bg-slate-100/80 transition flex items-center gap-1.5"
@@ -345,6 +359,15 @@ export const Navbar: React.FC = () => {
                     <span>Riwayat</span>
                   </Link>
 
+                  <a
+                    href="/#katalog-sparepart"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={mobileLinkCls('/#katalog-sparepart')}
+                  >
+                    <Package className="h-4 w-4" />
+                    <span>Katalog Sparepart</span>
+                  </a>
+
                   <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className={mobileLinkCls('/profile')}>
                     <Settings className="h-4 w-4" />
                     <span>Profil &amp; Pengaturan</span>
@@ -366,6 +389,14 @@ export const Navbar: React.FC = () => {
               </>
             ) : (
               <div className="space-y-2 pt-1">
+                <a
+                  href="/#katalog-sparepart"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={mobileLinkCls('/#katalog-sparepart')}
+                >
+                  <Package className="h-4 w-4" />
+                  <span>Katalog Sparepart</span>
+                </a>
                 <Link to="/history" onClick={() => setIsMobileMenuOpen(false)} className={mobileLinkCls('/history')}>
                   <History className="h-4 w-4" />
                   <span>Riwayat</span>
