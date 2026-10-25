@@ -19,6 +19,17 @@ import {
   CheckCircle2,
   Sparkles,
   Tag,
+  X,
+  Info,
+  Check,
+  AlertTriangle,
+  Layers,
+  ShoppingCart,
+  Star,
+  SlidersHorizontal,
+  Calculator,
+  Plus,
+  Minus,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -35,117 +46,288 @@ interface MotorSlide {
   alt: string;
 }
 
-interface SparepartItem {
+export interface SparepartItem {
   id: string;
   name: string;
+  brand: string;
+  oemCode: string;
   category: 'pelumas' | 'pengereman' | 'pengapian' | 'drivetrain';
   categoryLabel: string;
   price: string;
+  estPrice: number;
+  stockCount: number;
   compatibility: string;
   image: string;
   badge: string;
+  rating: number;
+  soldCount: string;
+  intervalKm: string;
   desc: string;
+  specs: { label: string; value: string }[];
+  symptoms: string[];
 }
 
 const SPAREPARTS_DATA: SparepartItem[] = [
   {
     id: 'oli-mesin',
-    name: 'Pelumas Mesin 10W-40 Synthetic',
+    name: 'Pelumas Mesin 10W-40 Synthetic Ester',
+    brand: 'Yamalube / MPX AHM Genuine',
+    oemCode: 'OEM: YML-90793-AJ422',
     category: 'pelumas',
     categoryLabel: 'Pelumas & Filter',
-    price: 'Rp 55.000 - Rp 95.000',
-    compatibility: 'Matic, Bebek, Sport (Yamalube / MPX / Shell)',
+    price: 'Rp 65.000',
+    estPrice: 65000,
+    stockCount: 28,
+    compatibility: 'Matic & Bebek (Yamaha NMAX/Aerox, Honda Vario/Beat)',
     image: '/images/spareparts/oli_motor.webp',
     badge: '100% Original',
-    desc: 'Melindungi mesin dari gesekan ekstrem, menjaga suhu optimal dan tarikan responsif.',
+    rating: 4.9,
+    soldCount: '520+ terjual',
+    intervalKm: 'Tiap 2.500 - 3.000 KM',
+    desc: 'Formula sintetis ester proteksi gesekan ekstrem, menstabilkan temperatur mesin dan respon tarikan spontan.',
+    specs: [
+      { label: 'Viskositas', value: 'SAE 10W-40 JASO MB / MA2' },
+      { label: 'Base Oil', value: 'Semi-Synthetic with Ester Additive' },
+      { label: 'Volume Kemasan', value: '800 ml & 1.000 ml (1 Liter)' },
+      { label: 'Sertifikasi', value: 'SNI Resmi & Standar Pabrikan Jepang' },
+    ],
+    symptoms: [
+      'Tarikan gas awal terasa berat dan mesin cepat panas',
+      'Warna oli pada deepstick sudah menghitam pekat pekat',
+      'Suara blok silinder terdengar kasar saat stasioner',
+    ],
   },
   {
     id: 'kampas-rem',
-    name: 'Kampas Rem Cakram & Tromol Asli',
+    name: 'Brake Pad Set Non-Asbestos Premium',
+    brand: 'Nissin / Yamaha OEM Disc Brake',
+    oemCode: 'OEM: 2DP-F5805-00',
     category: 'pengereman',
     categoryLabel: 'Pengereman & Ban',
-    price: 'Rp 45.000 - Rp 85.000',
-    compatibility: 'Depan & Belakang Semua Tipe Motor',
+    price: 'Rp 55.000',
+    estPrice: 55000,
+    stockCount: 19,
+    compatibility: 'Depan / Belakang (Cakram Kaliper 1 & 2 Piston)',
     image: '/images/spareparts/kampas_rem.webp',
     badge: 'Garansi Pakem',
-    desc: 'Daya cengkeram optimal tanpa merusak piringan cakram, tahan panas tinggi.',
+    rating: 4.9,
+    soldCount: '380+ terjual',
+    intervalKm: 'Tiap 10.000 - 15.000 KM',
+    desc: 'Kompon keramik semi-metallic anti decit, daya cengkeram instan tahan panas ekstrem tanpa mengikis rotor.',
+    specs: [
+      { label: 'Material Gesek', value: 'Semi-Metallic Organic Non-Asbestos' },
+      { label: 'Daya Tahan Suhu', value: 'Hingga 450°C Anti Fade' },
+      { label: 'Ketebalan Kampas', value: '4.8 mm (Batas servis: 1.5 mm)' },
+      { label: 'Garansi Pasang', value: 'Garansi Pakem & Bebas Bunyi 30 Hari' },
+    ],
+    symptoms: [
+      'Terdengar suara decitan besi menyengat saat tuas rem ditarik',
+      'Jarak pengereman bertambah jauh atau rem terasa bagel/keras',
+      'Tuas rem harus ditarik terlalu dalam mendekati grip stang',
+    ],
   },
   {
     id: 'busi-iridium',
-    name: 'Busi NGK Iridium & Standard OEM',
+    name: 'Busi Laser Iridium Long-Life Spark Plug',
+    brand: 'NGK Spark Plugs Japan',
+    oemCode: 'OEM: NGK-CR7EGP-IR',
     category: 'pengapian',
-    categoryLabel: 'Pengapian & Kelistrikan',
-    price: 'Rp 25.000 - Rp 85.000',
-    compatibility: 'Universal Matic, Bebek, & Sport',
+    categoryLabel: 'Pengapian & Aki',
+    price: 'Rp 45.000',
+    estPrice: 45000,
+    stockCount: 35,
+    compatibility: 'Universal Matic, Bebek, & Sport 110cc - 250cc',
     image: '/images/spareparts/busi.webp',
-    badge: 'Api Stabil',
-    desc: 'Pengapian lebih fokus dan efisien, hemat bahan bakar dan mudah starter pagi.',
+    badge: 'Api Stabil Fokus',
+    rating: 4.8,
+    soldCount: '610+ terjual',
+    intervalKm: 'Tiap 8.000 - 10.000 KM',
+    desc: 'Elektroda 0.6mm laser iridium menghadirkan percikan api super fokus, pembakaran tuntas, dan efisiensi BBM tinggi.',
+    specs: [
+      { label: 'Ujung Elektroda', value: 'Laser Welded Iridium 0.6 mm' },
+      { label: 'Ukuran Ulir', value: 'M10 x 1.0 (Hex Key 16 mm)' },
+      { label: 'Gap Percikan', value: '0.80 mm Presisi Pabrik' },
+      { label: 'Resistor ECU', value: '5 kOhm Anti-Interferensi Elektrikal' },
+    ],
+    symptoms: [
+      'Mesin brebet atau tersendat saat tarikan akselerasi mendadak',
+      'Motor susah dinyalakan pada pagi hari atau kondisi mesin dingin',
+      'Konsumsi bahan bakar terasa jauh lebih boros dari biasanya',
+    ],
   },
   {
     id: 'piringan-cakram',
-    name: 'Piringan Cakram Rem Disc Brake',
+    name: 'Floating Disc Brake Rotor Stainless Steel',
+    brand: 'Brembo / TDR Racing Performance',
+    oemCode: 'OEM: DSC-FLT-260MM',
     category: 'pengereman',
     categoryLabel: 'Pengereman & Ban',
-    price: 'Rp 120.000 - Rp 250.000',
-    compatibility: 'Honda, Yamaha, Suzuki, Kawasaki',
+    price: 'Rp 185.000',
+    estPrice: 185000,
+    stockCount: 8,
+    compatibility: 'Yamaha NMAX/Aerox, Honda Vario 125/160, Beat',
     image: '/images/spareparts/piringan_cakram.webp',
     badge: 'Anti Karat',
-    desc: 'Baja tahan karat berkekuatan tinggi dengan ventilasi pendinginan cepat.',
+    rating: 4.9,
+    soldCount: '140+ terjual',
+    intervalKm: 'Tiap 30.000 - 40.000 KM',
+    desc: 'Baja tahan karat martensitik AISI 420 dengan ventilasi buang panas cepat, anti deformasi saat rem ekstrem.',
+    specs: [
+      { label: 'Diameter Luar', value: '260 mm (Lebar Ventilasi Maksimal)' },
+      { label: 'Bahan Rotor', value: 'Stainless Martensitic High-Grade' },
+      { label: 'Ketebalan Rotor', value: '3.5 mm (Batas servis minimum: 3.0 mm)' },
+      { label: 'Dudukan Baut', value: '4 Lubang Hub Standard OEM' },
+    ],
+    symptoms: [
+      'Permukaan piringan beralur dalam bergelombang saat diraba jari',
+      'Stang kemudi bergetar hebat saat tuas rem depan dioperasikan',
+      'Ketebalan rotor sudah aus menipis mendekati 3 milimeter',
+    ],
   },
   {
     id: 'ban-motor',
-    name: 'Ban Luar Tubeless Soft Compound',
+    name: 'Ban Luar Tubeless Soft Compound City Grip',
+    brand: 'Pirelli Diablo Rosso / Maxxis Victra',
+    oemCode: 'OEM: TR-110-70-13-TL',
     category: 'pengereman',
     categoryLabel: 'Pengereman & Ban',
-    price: 'Rp 180.000 - Rp 450.000',
-    compatibility: 'Ring 12, 13, 14, & 17 (Pirelli / IRC / Maxxis)',
+    price: 'Rp 295.000',
+    estPrice: 295000,
+    stockCount: 14,
+    compatibility: 'Velg Ring 13 & 14 (Ukuran 110/70, 120/70, 90/90)',
     image: '/images/spareparts/ban_motor.webp',
     badge: 'Grip Basah/Kering',
-    desc: 'Alur pembuang air presisi dengan kompon awet untuk jalanan perkotaan.',
+    rating: 5.0,
+    soldCount: '290+ terjual',
+    intervalKm: 'Tiap 18.000 - 20.000 KM',
+    desc: 'Kompon silika tinggi dengan alur pembuang air kilat (flash groove), daya cengkeram optimal tanpa licin di aspal basah.',
+    specs: [
+      { label: 'Dimensi Ukuran', value: '110/70 - 13 / 14 M/C 48P Tubeless' },
+      { label: 'Jenis Senyawa', value: 'High-Silica Soft-Medium Dual Compound' },
+      { label: 'Pola Tapak', value: 'Flash Groove Directional Pattern' },
+      { label: 'Tekanan Rekomendasi', value: '29 PSI Depan / 33 PSI Belakang' },
+    ],
+    symptoms: [
+      'Segitiga tanda TWI (Tread Wear Indicator) sudah rata dengan tapak ban',
+      'Ban terasa sering selip atau goyang saat bermanuver di jalan basah',
+      'Permukaan dinding samping retak rambut atau benjol akibat benturan',
+    ],
   },
   {
     id: 'shockbreaker',
-    name: 'Suspensi Shockbreaker & Monoshock',
+    name: 'Suspensi Monoshock Tabung Gas Rebound',
+    brand: 'KYB Zeto / RCB Series Japan',
+    oemCode: 'OEM: KYB-ZT-330MM',
     category: 'drivetrain',
     categoryLabel: 'Drivetrain & Suspensi',
-    price: 'Rp 280.000 - Rp 650.000',
-    compatibility: 'Matic & Bebek (Twin Shock / Monoshock)',
+    price: 'Rp 395.000',
+    estPrice: 395000,
+    stockCount: 6,
+    compatibility: 'Matic Honda & Yamaha (Panjang 305mm - 330mm)',
     image: '/images/spareparts/shockbreaker.webp',
     badge: 'Rebound Empuk',
-    desc: 'Redaman getaran maksimal untuk kenyamanan berkendara harian dan muatan berat.',
+    rating: 4.8,
+    soldCount: '95+ terjual',
+    intervalKm: 'Tiap 25.000 - 30.000 KM',
+    desc: 'Ruang ganda gas nitrogen dan oli hidraulik presisi, meredam hentakan jalan rusak tanpa limbung saat berboncengan.',
+    specs: [
+      { label: 'Panjang As ke As', value: '330 mm Adjustable Height' },
+      { label: 'Peredam Hentak', value: 'Nitrogen Gas Chamber + Hydraulic Damping' },
+      { label: 'Diameter As Damper', value: '12.5 mm Hard-Chromed Alloy' },
+      { label: 'Tingkat Setelan', value: '5-Step Spring Preload Setting' },
+    ],
+    symptoms: [
+      'Muncul rembesan cairan oli pada as batang shockbreaker',
+      'Motor terasa mengayun mantul berkali-kali setelah melewati lubang',
+      'Terdengar bunyi jeduk benturan keras saat melewati polisi tidur',
+    ],
   },
   {
     id: 'filter-oli',
-    name: 'Filter Oli Mesin & Saringan Udara',
+    name: 'Filter Oli Mesin & Element Air Cleaner Injeksi',
+    brand: 'Honda AHM / Yamaha Genuine Parts',
+    oemCode: 'OEM: FLT-17210-K59-A10',
     category: 'pelumas',
     categoryLabel: 'Pelumas & Filter',
-    price: 'Rp 25.000 - Rp 55.000',
-    compatibility: 'Injeksi & Karburator',
+    price: 'Rp 35.000',
+    estPrice: 35000,
+    stockCount: 42,
+    compatibility: 'Injeksi PGM-FI & Blue Core (Vario, Beat, NMAX, Aerox)',
     image: '/images/spareparts/filter_oli.webp',
-    badge: 'Filtrasi Mikro',
-    desc: 'Menyaring partikel gram besi dan debu halus agar ruang bakar tetap bersih.',
+    badge: 'Filtrasi 10 Mikron',
+    rating: 4.8,
+    soldCount: '780+ terjual',
+    intervalKm: 'Tiap 8.000 - 10.000 KM',
+    desc: 'Kertas viscose berminyak khusus penangkap debu mikro, mencegah partikel abrasif masuk ke silinder dan ruang bakar.',
+    specs: [
+      { label: 'Material Filter', value: 'Viscous Paper Oil-Treated Media' },
+      { label: 'Tingkat Filtrasi', value: 'Menahan 99.2% Partikel Debu 10 Mikron' },
+      { label: 'Standar Emisi', value: 'Ramah Euro 4 & Euro 5 Injection' },
+      { label: 'Tipe Pemakaian', value: 'Direct Replacement Plug & Play' },
+    ],
+    symptoms: [
+      'Warna kertas saringan tampak hitam legam pekat berlumpur',
+      'Tenaga mesin tertahan loyo terutama saat gas ditarik penuh',
+      'Konsumsi bensin mendadak boros akibat suplai udara terhambat',
+    ],
   },
   {
     id: 'aki-motor',
-    name: 'Aki Kering Maintenance Free (MF)',
+    name: 'Aki Kering Maintenance Free (MF) 12V 5Ah',
+    brand: 'GS Astra / Yuasa Battery OEM',
+    oemCode: 'OEM: GS-GTZ5S-12V',
     category: 'pengapian',
-    categoryLabel: 'Pengapian & Kelistrikan',
-    price: 'Rp 195.000 - Rp 320.000',
-    compatibility: 'GS Astra, Yuasa, Motobatt',
+    categoryLabel: 'Pengapian & Aki',
+    price: 'Rp 235.000',
+    estPrice: 235000,
+    stockCount: 16,
+    compatibility: 'Universal Semua Motor Matic & Bebek Injeksi',
     image: '/images/spareparts/aki_motor.webp',
     badge: 'Garansi 6 Bulan',
-    desc: 'Arus start kuat dan stabil, langsung pasang tanpa perlu isi air aki.',
+    rating: 4.9,
+    soldCount: '410+ terjual',
+    intervalKm: 'Tiap 1.5 - 2 Tahun',
+    desc: 'Aki tertutup bebas perawatan (VRLA), arus starter kuat stabil untuk sistem injeksi modern dan kelistrikan lampu LED.',
+    specs: [
+      { label: 'Tegangan & Kapasitas', value: '12 Volt / 3.5 - 5.0 Ampere Hour' },
+      { label: 'Cold Cranking (CCA)', value: '85 CCA Semburan Starter Instan' },
+      { label: 'Teknologi Sel', value: 'VRLA AGM Sealed (Anti Bocor Miring)' },
+      { label: 'Jaminan Garansi', value: 'Garansi Resmi Toko & Tukar Baru 6 Bulan' },
+    ],
+    symptoms: [
+      'Tombol starter elektrik hanya mengeluarkan bunyi cetik-cetik pelan',
+      'Layar speedometer digital berkedip atau mati saat starter ditekan',
+      'Klakson bersuara serak atau redup saat lampu depan menyala',
+    ],
   },
   {
     id: 'rantai-motor',
-    name: 'Rantai & Gir Paket Heavy Duty Kit',
+    name: 'Drive Chain & Sprocket Heavy Duty Kit Gold',
+    brand: 'D.I.D Racing Chain Japan',
+    oemCode: 'OEM: DID-428HD-120L',
     category: 'drivetrain',
     categoryLabel: 'Drivetrain & Suspensi',
-    price: 'Rp 150.000 - Rp 280.000',
-    compatibility: 'Tipe Bebek & Sport (428 / 520)',
+    price: 'Rp 195.000',
+    estPrice: 195000,
+    stockCount: 11,
+    compatibility: 'Motor Tipe Bebek & Sport (Panjang 428HD Solid Bushing)',
     image: '/images/spareparts/rantai_motor.webp',
-    badge: 'Presisi Baja',
-    desc: 'Material baja hardened anti mulur dengan pelumasan tahan lama.',
+    badge: 'Solid Bushing Baja',
+    rating: 4.9,
+    soldCount: '230+ terjual',
+    intervalKm: 'Tiap 20.000 - 25.000 KM',
+    desc: 'Gir baja karbon tahan aus dengan rantai bushing padat lapis emas anti mulur, transfer tenaga maksimal ke roda belakang.',
+    specs: [
+      { label: 'Ukuran Rantai', value: 'Pitch 428HD (Solid Bushing 120 Links)' },
+      { label: 'Material Gir Depan/Belakang', value: 'High-Carbon Steel Induction Hardened' },
+      { label: 'Daya Tarik Maksimal', value: '2.450 kgf High-Tensile Strength' },
+      { label: 'Lapisan Pelindung', value: 'Gold Plated Anti Rust Treatment' },
+    ],
+    symptoms: [
+      'Rantai terus kendur berulang kali meski sudah distel habis',
+      'Mata gigi gir belakang tampak tajam runcing atau bengkok miring',
+      'Terdengar suara gemerisik berisik kasar saat akselerasi jalan',
+    ],
   },
 ];
 
@@ -202,11 +384,37 @@ export const LandingPage: React.FC = () => {
   const isMouseDownRef = useRef(false);
 
   const [selectedSparepartCat, setSelectedSparepartCat] = useState<string>('all');
+  const [searchSparepart, setSearchSparepart] = useState<string>('');
+  const [sortSparepart, setSortSparepart] = useState<'popular' | 'price-asc' | 'price-desc'>('popular');
+  const [detailModalItem, setDetailModalItem] = useState<SparepartItem | null>(null);
+  const [selectedSparepartIds, setSelectedSparepartIds] = useState<string[]>([]);
 
-  const filteredSpareparts =
-    selectedSparepartCat === 'all'
-      ? SPAREPARTS_DATA
-      : SPAREPARTS_DATA.filter((s) => s.category === selectedSparepartCat);
+  const toggleSelectSparepart = (id: string) => {
+    setSelectedSparepartIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const filteredSpareparts = SPAREPARTS_DATA.filter((item) => {
+    const matchCat = selectedSparepartCat === 'all' || item.category === selectedSparepartCat;
+    const q = searchSparepart.toLowerCase().trim();
+    const matchSearch =
+      q === '' ||
+      item.name.toLowerCase().includes(q) ||
+      item.brand.toLowerCase().includes(q) ||
+      item.oemCode.toLowerCase().includes(q) ||
+      item.compatibility.toLowerCase().includes(q);
+    return matchCat && matchSearch;
+  }).sort((a, b) => {
+    if (sortSparepart === 'price-asc') return a.estPrice - b.estPrice;
+    if (sortSparepart === 'price-desc') return b.estPrice - a.estPrice;
+    return b.rating - a.rating;
+  });
+
+  const selectedSparepartObjects = SPAREPARTS_DATA.filter((s) => selectedSparepartIds.includes(s.id));
+  const subtotalSpareparts = selectedSparepartObjects.reduce((acc, curr) => acc + curr.estPrice, 0);
+  const baseServiceFee = 45000;
+  const grandTotalEstimate = selectedSparepartIds.length > 0 ? baseServiceFee + subtotalSpareparts : 0;
 
   // Preload all 36 frames of NMAX and 36 frames of XSR (original animation)
   useEffect(() => {
@@ -669,113 +877,318 @@ export const LandingPage: React.FC = () => {
 
       {/* ═══ Section Katalog Suku Cadang & Sparepart Asli ═══ */}
       <section id="katalog-sparepart" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 sm:mt-20 scroll-mt-24">
-        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 sm:p-10 shadow-soft space-y-8">
+        <div className="bg-white/85 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-soft space-y-8">
           
           {/* Header Section */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-100 pb-6">
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-red-600 bg-red-50 border border-red-200/60 px-2.5 py-0.5 rounded-full">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-slate-100 pb-6">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-red-600 bg-red-50 border border-red-200/60 px-3 py-1 rounded-full">
                 <Package className="h-3.5 w-3.5" />
-                <span>Katalog Suku Cadang Resmi</span>
+                <span>Katalog Suku Cadang Resmi Standar Pabrikan</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                SPAREPART &amp; OLI ORIGINAL
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
+                SPAREPART &amp; PELUMAS ORIGINAL
               </h2>
-              <p className="text-sm text-slate-600 max-w-2xl">
-                Jaminan 100% suku cadang resmi dan pelumas berkualitas standar pabrikan untuk menjaga performa mesin, keamanan pengereman, dan keawetan motor Anda.
+              <p className="text-sm text-slate-600 max-w-2xl leading-relaxed">
+                Jaminan 100% suku cadang asli bergaransi dengan nomor seri OEM resmi, teknisi bersertifikat, dan transparansi estimasi biaya servis tanpa markup tersembunyi.
               </p>
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3.5 py-2 rounded-2xl shrink-0">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              <span>Garansi Pasang di Bengkel</span>
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50/90 border border-emerald-200/80 px-3.5 py-2 rounded-2xl shadow-2xs">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>Garansi Resmi &amp; Jasa Pasang Bengkel</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-3.5 py-2 rounded-2xl">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Stok Ready di Rak Bengkel</span>
+              </div>
             </div>
           </div>
 
-          {/* Filter Categories */}
+          {/* Interactive Search & Filter Toolbar */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-slate-50/90 border border-slate-200/70 p-3 sm:p-4 rounded-2xl">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchSparepart}
+                onChange={(e) => setSearchSparepart(e.target.value)}
+                placeholder="Cari sparepart, tipe motor (Beat, NMAX, Vario...), atau kode OEM..."
+                className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition shadow-2xs"
+              />
+              {searchSparepart && (
+                <button
+                  type="button"
+                  onClick={() => setSearchSparepart('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Sort Dropdown */}
+            <div className="flex items-center gap-2 shrink-0">
+              <SlidersHorizontal className="h-4 w-4 text-slate-500 hidden sm:block" />
+              <select
+                value={sortSparepart}
+                onChange={(e) => setSortSparepart(e.target.value as any)}
+                className="w-full sm:w-auto px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 transition shadow-2xs cursor-pointer"
+              >
+                <option value="popular">Urutkan: Rating &amp; Terpopuler</option>
+                <option value="price-asc">Harga: Terendah ke Tertinggi</option>
+                <option value="price-desc">Harga: Tertinggi ke Terendah</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Category Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
             {[
-              { id: 'all', label: 'Semua Sparepart' },
-              { id: 'pelumas', label: 'Pelumas & Filter' },
-              { id: 'pengereman', label: 'Pengereman & Ban' },
-              { id: 'pengapian', label: 'Pengapian & Aki' },
-              { id: 'drivetrain', label: 'Drivetrain & Suspensi' },
+              { id: 'all', label: 'Semua Suku Cadang', count: SPAREPARTS_DATA.length },
+              { id: 'pelumas', label: 'Pelumas & Filter', count: SPAREPARTS_DATA.filter((s) => s.category === 'pelumas').length },
+              { id: 'pengereman', label: 'Pengereman & Ban', count: SPAREPARTS_DATA.filter((s) => s.category === 'pengereman').length },
+              { id: 'pengapian', label: 'Pengapian & Aki', count: SPAREPARTS_DATA.filter((s) => s.category === 'pengapian').length },
+              { id: 'drivetrain', label: 'Drivetrain & Suspensi', count: SPAREPARTS_DATA.filter((s) => s.category === 'drivetrain').length },
             ].map((cat) => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedSparepartCat(cat.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 active:scale-95 ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 active:scale-95 ${
                   selectedSparepartCat === cat.id
                     ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900'
                 }`}
               >
-                {cat.label}
+                <span>{cat.label}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                    selectedSparepartCat === cat.id ? 'bg-white/20 text-white' : 'bg-slate-200/80 text-slate-600'
+                  }`}
+                >
+                  {cat.count}
+                </span>
               </button>
             ))}
           </div>
 
-          {/* Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredSpareparts.map((item) => (
-              <div
-                key={item.id}
-                className="group bg-white border border-slate-200/90 rounded-2xl overflow-hidden hover:border-slate-900/30 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+          {/* Search Result Count */}
+          {searchSparepart && (
+            <div className="text-xs text-slate-500 font-medium">
+              Menemukan <span className="font-bold text-slate-900">{filteredSpareparts.length}</span> suku cadang untuk kata kunci "{searchSparepart}"
+            </div>
+          )}
+
+          {/* Product Grid (Bento Style) */}
+          {filteredSpareparts.length === 0 ? (
+            <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+              <Package className="h-10 w-10 text-slate-400 mx-auto mb-2" />
+              <div className="font-bold text-slate-800 text-sm">Suku cadang tidak ditemukan</div>
+              <p className="text-xs text-slate-500 mt-1">Coba gunakan kata kunci lain atau hubungi CS WhatsApp kami untuk cek stok khusus.</p>
+              <button
+                type="button"
+                onClick={() => { setSearchSparepart(''); setSelectedSparepartCat('all'); }}
+                className="mt-3 text-xs font-bold text-red-600 hover:underline"
               >
-                <div>
-                  {/* Image Container with Zoom effect */}
-                  <div className="relative aspect-square sm:aspect-[4/3] bg-slate-50 overflow-hidden flex items-center justify-center p-4 border-b border-slate-100">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs border border-slate-200 text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-2xs">
-                      {item.badge}
-                    </div>
-                    <div className="absolute top-3 right-3 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-xs">
-                      {item.categoryLabel}
-                    </div>
-                  </div>
-
-                  {/* Details */}
-                  <div className="p-4 space-y-2">
-                    <div className="font-extrabold text-slate-900 text-base group-hover:text-red-600 transition-colors">
-                      {item.name}
-                    </div>
-                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                      {item.desc}
-                    </p>
-                    <div className="text-[11px] font-medium text-slate-500 bg-slate-50 rounded-lg p-2 border border-slate-100">
-                      <span className="font-bold text-slate-700">Kompatibel: </span>
-                      <span>{item.compatibility}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer Price & Booking CTA */}
-                <div className="p-4 pt-0">
-                  <div className="border-t border-slate-100 pt-3 flex items-center justify-between gap-2">
+                Reset Semua Filter
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredSpareparts.map((item) => {
+                const isSelected = selectedSparepartIds.includes(item.id);
+                return (
+                  <div
+                    key={item.id}
+                    className={`group bg-white border rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between hover:shadow-xl ${
+                      isSelected ? 'border-red-500 ring-2 ring-red-500/20' : 'border-slate-200/90 hover:border-slate-900/30'
+                    }`}
+                  >
                     <div>
-                      <div className="text-[10px] uppercase font-bold text-slate-400">Kisaran Harga</div>
-                      <div className="text-sm font-extrabold text-slate-900 font-mono">
-                        {item.price}
+                      {/* Image Container with Zoom effect */}
+                      <div className="relative aspect-square sm:aspect-[4/3] bg-slate-50 overflow-hidden flex items-center justify-center p-5 border-b border-slate-100">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                        {/* Top Badges */}
+                        <div className="absolute top-3 left-3 flex flex-col gap-1 items-start">
+                          <span className="bg-white/95 backdrop-blur-xs border border-slate-200 text-slate-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-2xs">
+                            {item.badge}
+                          </span>
+                          <span className="bg-slate-900/80 text-white text-[9px] font-mono px-2 py-0.5 rounded-full backdrop-blur-xs">
+                            {item.oemCode}
+                          </span>
+                        </div>
+
+                        {/* Stock Beacon */}
+                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-xs border border-slate-200 text-[10px] font-bold text-emerald-700 px-2.5 py-0.5 rounded-full shadow-2xs flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span>{item.stockCount} Ready</span>
+                        </div>
+                      </div>
+
+                      {/* Details */}
+                      <div className="p-4 space-y-2.5">
+                        <div className="flex items-center justify-between text-[11px] text-slate-500">
+                          <span className="font-extrabold uppercase tracking-wider text-slate-400">{item.brand}</span>
+                          <div className="flex items-center gap-1 text-amber-500 font-bold">
+                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                            <span>{item.rating}</span>
+                            <span className="text-slate-400 text-[10px]">({item.soldCount})</span>
+                          </div>
+                        </div>
+
+                        <div className="font-black text-slate-900 text-base leading-snug group-hover:text-red-600 transition-colors">
+                          {item.name}
+                        </div>
+
+                        <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                          {item.desc}
+                        </p>
+
+                        <div className="space-y-1.5 pt-1">
+                          <div className="text-[11px] font-medium text-slate-600 bg-slate-50 rounded-lg p-2 border border-slate-100 flex items-start gap-1.5">
+                            <Bike className="h-3.5 w-3.5 text-slate-500 mt-0.5 shrink-0" />
+                            <div className="line-clamp-1">
+                              <span className="font-bold text-slate-700">Kompatibel: </span>
+                              <span>{item.compatibility}</span>
+                            </div>
+                          </div>
+
+                          <div className="text-[11px] font-medium text-emerald-700 bg-emerald-50/70 rounded-lg px-2 py-1 border border-emerald-100 flex items-center gap-1.5">
+                            <Clock className="h-3 w-3 text-emerald-600 shrink-0" />
+                            <span>Interval: <strong>{item.intervalKm}</strong></span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <Link
-                      to={user ? '/customer/booking' : '/login'}
-                      className="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-xs active:scale-95 shrink-0"
-                    >
-                      <span>Pesan Servis</span>
-                      <ArrowRight className="h-3 w-3" />
-                    </Link>
+
+                    {/* Footer Actions */}
+                    <div className="p-4 pt-0 space-y-2">
+                      <div className="border-t border-slate-100 pt-3 flex items-center justify-between gap-2">
+                        <div>
+                          <div className="text-[10px] uppercase font-bold text-slate-400">Harga Sparepart</div>
+                          <div className="text-base font-black text-slate-900 font-mono tracking-tight">
+                            {item.price}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          {/* Modal trigger */}
+                          <button
+                            type="button"
+                            onClick={() => setDetailModalItem(item)}
+                            className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-2 rounded-xl transition active:scale-95 cursor-pointer"
+                            title="Lihat Spesifikasi & Tanda Ganti"
+                          >
+                            <Info className="h-3.5 w-3.5 text-slate-500" />
+                            <span className="hidden sm:inline">Spek</span>
+                          </button>
+
+                          {/* Simulation Toggle */}
+                          <button
+                            type="button"
+                            onClick={() => toggleSelectSparepart(item.id)}
+                            className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-2xs active:scale-95 shrink-0 cursor-pointer ${
+                              isSelected
+                                ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-600/20'
+                                : 'bg-slate-900 hover:bg-slate-800 text-white'
+                            }`}
+                          >
+                            {isSelected ? (
+                              <>
+                                <Check className="h-3.5 w-3.5" />
+                                <span>Dipilih</span>
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="h-3.5 w-3.5" />
+                                <span>+ Simulasi</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Interactive "Simulasi Estimasi Biaya Servis & Sparepart" Widget */}
+          {selectedSparepartIds.length > 0 && (
+            <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border-2 border-red-500/30 rounded-3xl p-5 sm:p-7 text-white shadow-2xl space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-red-600/30 border border-red-500/40 flex items-center justify-center shrink-0">
+                    <Calculator className="h-5 w-5 text-red-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base text-white">Simulasi Paket Servis &amp; Pasang Suku Cadang</h3>
+                    <p className="text-xs text-slate-300">Estimasi transparan: Jasa servis bengkel + suku cadang asli pilihan Anda.</p>
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedSparepartIds([])}
+                  className="text-xs text-slate-400 hover:text-white underline self-start sm:self-auto cursor-pointer"
+                >
+                  Bersihkan Pilihan ({selectedSparepartIds.length})
+                </button>
               </div>
-            ))}
-          </div>
+
+              {/* Selected Items Pills */}
+              <div className="flex flex-wrap gap-2">
+                {selectedSparepartObjects.map((s) => (
+                  <div
+                    key={s.id}
+                    className="inline-flex items-center gap-2 bg-slate-800 border border-slate-700/80 px-3 py-1.5 rounded-xl text-xs text-slate-200"
+                  >
+                    <span className="font-medium">{s.name}</span>
+                    <span className="font-mono text-red-400 font-bold">{s.price}</span>
+                    <button
+                      type="button"
+                      onClick={() => toggleSelectSparepart(s.id)}
+                      className="text-slate-400 hover:text-red-400 p-0.5 rounded-full cursor-pointer"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Price Breakdown & CTA */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-4 text-xs text-slate-400">
+                    <span>Jasa Servis Ringan: <strong className="text-slate-200">Rp 45.000</strong></span>
+                    <span>•</span>
+                    <span>Sparepart ({selectedSparepartIds.length} item): <strong className="text-slate-200">Rp {subtotalSpareparts.toLocaleString('id-ID')}</strong></span>
+                  </div>
+                  <div className="text-lg sm:text-xl font-black text-white font-mono flex items-center gap-2">
+                    <span className="text-xs font-normal text-slate-400 uppercase tracking-wider font-sans">Total Estimasi:</span>
+                    <span className="text-red-400">Rp {grandTotalEstimate.toLocaleString('id-ID')}</span>
+                  </div>
+                </div>
+
+                <Link
+                  to={user ? '/customer/booking' : '/login'}
+                  className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-extrabold px-6 py-3 rounded-xl transition shadow-lg shadow-red-600/30 active:scale-95 shrink-0"
+                >
+                  <span>Lanjut Booking Slot dengan Paket Ini</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* Bottom Banner */}
           <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 sm:p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -784,8 +1197,8 @@ export const LandingPage: React.FC = () => {
                 <Wrench className="h-5 w-5 text-red-400" />
               </div>
               <div>
-                <div className="font-bold text-sm">Butuh Sparepart Lain yang Tidak Ada di Daftar?</div>
-                <div className="text-xs text-slate-300">Hubungi kami melalui WhatsApp untuk cek ketersediaan stok suku cadang khusus.</div>
+                <div className="font-bold text-sm">Butuh Suku Cadang Khusus atau Aksesoris Lain?</div>
+                <div className="text-xs text-slate-300">Tim mekanik kami siap membantu mencarikan suku cadang original sesuai nomor rangka motor Anda.</div>
               </div>
             </div>
             <a
@@ -801,6 +1214,154 @@ export const LandingPage: React.FC = () => {
 
         </div>
       </section>
+
+      {/* ═══ Modal Detail Spesifikasi Teknis Suku Cadang (Apple / Dribbble Style) ═══ */}
+      {detailModalItem && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+            
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 border-b border-slate-100 flex items-start justify-between gap-4 bg-slate-50/70">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
+                    {detailModalItem.badge}
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
+                    {detailModalItem.oemCode}
+                  </span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">
+                  {detailModalItem.name}
+                </h3>
+                <div className="text-xs text-slate-500 font-medium">
+                  Brand Resmi: <strong className="text-slate-800">{detailModalItem.brand}</strong>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setDetailModalItem(null)}
+                className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 rounded-full transition shrink-0 cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body (Scrollable) */}
+            <div className="p-5 sm:p-6 space-y-6 overflow-y-auto flex-1">
+              {/* Product Preview + Stock Badge */}
+              <div className="flex flex-col sm:flex-row items-center gap-5 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                <div className="w-32 h-32 bg-white rounded-xl overflow-hidden border border-slate-200 p-2 shrink-0 flex items-center justify-center shadow-2xs">
+                  <img
+                    src={detailModalItem.image}
+                    alt={detailModalItem.name}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </div>
+                <div className="space-y-2 text-center sm:text-left flex-1">
+                  <div className="text-xs text-slate-600 leading-relaxed">
+                    {detailModalItem.desc}
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>{detailModalItem.stockCount} Unit Tersedia</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+                      <Clock className="h-3 w-3 text-slate-500" />
+                      <span>Rekomendasi: {detailModalItem.intervalKm}</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Technical Specifications Table */}
+              <div className="space-y-2.5">
+                <div className="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <Layers className="h-3.5 w-3.5 text-red-600" />
+                  <span>Spesifikasi Teknis Pabrikan</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  {detailModalItem.specs.map((spec, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex flex-col justify-center"
+                    >
+                      <span className="text-[10px] text-slate-400 font-bold uppercase">{spec.label}</span>
+                      <span className="text-slate-800 font-medium">{spec.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Symptoms / Warning Box */}
+              <div className="bg-amber-50/80 border border-amber-200/90 rounded-2xl p-4 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-extrabold text-amber-900">
+                  <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+                  <span>Gejala / Tanda Motor Perlu Penggantian Part Ini:</span>
+                </div>
+                <ul className="text-xs text-amber-950 space-y-1.5 pl-6 list-disc">
+                  {detailModalItem.symptoms.map((symptom, idx) => (
+                    <li key={idx} className="leading-relaxed">{symptom}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Compatibility Info */}
+              <div className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <span className="font-bold text-slate-800">Kompatibilitas: </span>
+                <span>{detailModalItem.compatibility}</span>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-400">Harga Resmi Suku Cadang</div>
+                <div className="text-lg font-black text-slate-900 font-mono">{detailModalItem.price}</div>
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    toggleSelectSparepart(detailModalItem.id);
+                    setDetailModalItem(null);
+                  }}
+                  className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-2xs active:scale-95 cursor-pointer ${
+                    selectedSparepartIds.includes(detailModalItem.id)
+                      ? 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                      : 'bg-slate-900 hover:bg-slate-800 text-white'
+                  }`}
+                >
+                  {selectedSparepartIds.includes(detailModalItem.id) ? (
+                    <>
+                      <Minus className="h-3.5 w-3.5" />
+                      <span>Hapus dari Simulasi</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>+ Tambah ke Simulasi</span>
+                    </>
+                  )}
+                </button>
+
+                <Link
+                  to={user ? '/customer/booking' : '/login'}
+                  onClick={() => setDetailModalItem(null)}
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-md shadow-red-600/20 active:scale-95"
+                >
+                  <span>Pesan Sekarang</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* ═══ Akun Demo Pengujian Praktikum (Disimpan di Bawah untuk Evaluator) ═══ */}
       <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
