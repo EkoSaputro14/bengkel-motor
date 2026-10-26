@@ -9,11 +9,11 @@
 Aplikasi web terpadu operasional bengkel motor berbasis **RESTful API** dengan mekanisme **Auto-Confirm Booking**, proteksi *concurrency* / *race condition*, dan **Digital Service Logbook** berbasis nomor polisi kendaraan.
 
 Proyek ini dibangun oleh **Kelompok 2** untuk mata kuliah **Pemrograman Web Service (Tahun Akademik 2026/2027)**, Universitas Harkat Negeri:
-1. **Intan Komalasari**
-2. **Feldi Sanjaya**
-3. **Imzy Zulijar Setiawan**
+1. **Intan Komalasari** (NIM: 23215012)
+2. **Feldi Sanjaya** (NIM: 23215055)
+3. **Imzy Zulijar Setiawan** (NIM: 23215035)
 4. **Eko Saputro** (NIM: 23215050)
-5. **Zakky Fawwaz Mubarok**
+5. **Zakky Fawwaz Mubarok** (NIM: 23215061)
 
 ---
 
