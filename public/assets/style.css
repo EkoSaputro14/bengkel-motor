@@ -1,0 +1,58 @@
+/* Bengkel Motor API — gaya sederhana tanpa framework */
+:root {
+  --bg: #f4f6f8; --card: #ffffff; --primary: #e63946; --primary-dark: #c1121f;
+  --dark: #1d3557; --text: #2b2d42; --muted: #6c757d; --border: #e3e7ea;
+  --ok: #2a9d8f; --warn: #e9c46a; --danger: #e76f51;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+.topbar { background: var(--dark); color: #fff; padding: 0.7rem 1.2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+.brand { font-weight: 700; font-size: 1.15rem; color: #fff; text-decoration: none; }
+.brand span { color: var(--primary); }
+.topbar nav { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.topbar nav a { color: #dfe6ee; text-decoration: none; font-weight: 500; }
+.topbar nav a:hover { color: #fff; }
+.badge-user { background: rgba(255,255,255,.15); border-radius: 999px; padding: .15rem .7rem; font-size: .8rem; }
+.container { max-width: 1000px; margin: 1.5rem auto; padding: 0 1rem; display: grid; gap: 1.2rem; }
+.hero { background: linear-gradient(120deg, var(--dark), #2a4a7f); color: #fff; border-radius: 14px; padding: 2rem; }
+.hero h1 { font-size: 1.7rem; margin-bottom: .5rem; }
+.hero p { opacity: .9; max-width: 640px; }
+.hero-actions { margin-top: 1rem; display: flex; gap: .6rem; flex-wrap: wrap; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; }
+.card h2, .card h3 { margin-bottom: .6rem; color: var(--dark); }
+.btn { display: inline-block; border: 1px solid var(--border); background: #fff; color: var(--text); padding: .5rem 1rem; border-radius: 8px; cursor: pointer; text-decoration: none; font-size: .92rem; }
+.btn:hover { border-color: var(--muted); }
+.btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-sm { padding: .25rem .6rem; font-size: .8rem; }
+.btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.ok { background: var(--ok); border-color: var(--ok); color: #fff; }
+.btn.warn { background: var(--warn); border-color: var(--warn); color: #4a3b00; }
+.table { width: 100%; border-collapse: collapse; margin-top: .5rem; font-size: .92rem; }
+.table th, .table td { border: 1px solid var(--border); padding: .5rem .6rem; text-align: left; }
+.table th { background: #eef2f6; color: var(--dark); }
+.inline-form { display: flex; gap: .5rem; flex-wrap: wrap; align-items: flex-end; margin: .6rem 0; }
+.inline-form input, .inline-form select { padding: .5rem; border: 1px solid var(--border); border-radius: 8px; flex: 1; min-width: 140px; }
+.form-card { max-width: 420px; margin: 2rem auto; }
+.form-card label { display: block; margin-bottom: .8rem; font-weight: 600; font-size: .9rem; }
+.form-card input { display: block; width: 100%; margin-top: .25rem; padding: .55rem; border: 1px solid var(--border); border-radius: 8px; }
+.msg { margin-top: .6rem; font-weight: 600; }
+.msg.err { color: var(--primary-dark); }
+.msg.ok { color: var(--ok); }
+.hidden { display: none !important; }
+.hint { color: var(--muted); font-size: .9rem; }
+.slot { display: inline-flex; align-items: center; gap: .6rem; border: 1px solid var(--border); border-radius: 10px; padding: .5rem .8rem; margin: .25rem .4rem .25rem 0; background: #fafbfc; }
+.slot.full { opacity: .5; }
+.slot button { padding: .3rem .7rem; font-size: .8rem; }
+.pill { border-radius: 999px; padding: .1rem .6rem; font-size: .75rem; font-weight: 700; color: #fff; }
+.pill.booked { background: var(--warn); color: #4a3b00; }
+.pill.checked_in { background: #4361ee; }
+.pill.in_progress { background: #7209b7; }
+.pill.completed { background: var(--ok); }
+.pill.cancelled { background: var(--muted); }
+pre { background: #1d3557; color: #d6e4f0; padding: .8rem; border-radius: 8px; overflow-x: auto; font-size: .85rem; }
+code { background: #eef2f6; padding: .1rem .35rem; border-radius: 4px; }
+.footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 1.5rem 1rem 2.5rem; }
+.footer a { color: var(--primary-dark); }
+@media (max-width: 640px) { .hero { padding: 1.2rem; } .topbar nav { gap: .6rem; font-size: .9rem; } }

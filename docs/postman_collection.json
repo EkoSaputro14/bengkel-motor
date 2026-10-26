@@ -1,0 +1,176 @@
+{
+  "info": {
+    "name": "Bengkel Motor API - Kelompok 2",
+    "description": "RESTful API Layanan Penjadwalan Servis dan Manajemen Riwayat Perawatan Berkala Bengkel Motor",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Budi Baru\",\n  \"no_hp\": \"081234567890\",\n  \"email\": \"budi2@mail.test\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"budi@mail.test\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/auth/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kendaraan",
+      "item": [
+        {
+          "name": "Daftar Kendaraan",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/vehicles" }
+        },
+        {
+          "name": "Tambah Kendaraan",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/api/vehicles",
+            "body": { "mode": "raw", "raw": "{\n  \"no_polisi\": \"B1234XYZ\",\n  \"merk\": \"Honda\",\n  \"model\": \"Beat\",\n  \"tahun\": 2021\n}" }
+          }
+        },
+        {
+          "name": "Ubah Kendaraan",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/api/vehicles/1",
+            "body": { "mode": "raw", "raw": "{\n  \"merk\": \"Honda\",\n  \"model\": \"Vario 125\",\n  \"tahun\": 2022\n}" }
+          }
+        },
+        {
+          "name": "Hapus Kendaraan",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/vehicles/1" }
+        }
+      ]
+    },
+    {
+      "name": "Slot",
+      "item": [
+        {
+          "name": "Slot per Tanggal",
+          "request": { "method": "GET", "url": "{{base_url}}/api/slots?tanggal=2026-10-05" }
+        },
+        {
+          "name": "Tanggal Tersedia",
+          "request": { "method": "GET", "url": "{{base_url}}/api/slots/available" }
+        },
+        {
+          "name": "Buat Slot (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/api/slots",
+            "body": { "mode": "raw", "raw": "{\n  \"tanggal\": \"2026-10-06\",\n  \"jam_mulai\": \"08:00\",\n  \"kuota_maksimal\": 4\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Booking",
+      "item": [
+        {
+          "name": "Daftar Booking",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/bookings" }
+        },
+        {
+          "name": "Reservasi Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/api/bookings",
+            "body": { "mode": "raw", "raw": "{\n  \"vehicle_id\": 1,\n  \"slot_id\": 1,\n  \"keluhan\": \"Mesin berbunyi kasar\"\n}" }
+          }
+        },
+        {
+          "name": "Detail Booking",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/bookings/1" }
+        },
+        {
+          "name": "Batalkan Booking",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/bookings/1" }
+        },
+        {
+          "name": "Ubah Status (mekanik/admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/api/bookings/1/status",
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"checked_in\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Logbook Servis",
+      "item": [
+        {
+          "name": "Catat Servis (mekanik/admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/api/service-records",
+            "body": { "mode": "raw", "raw": "{\n  \"booking_id\": 1,\n  \"odometer_km\": 12500,\n  \"tindakan\": \"Ganti oli mesin dan tune-up\",\n  \"suku_cadang\": \"Oli 10W-30, busi\",\n  \"catatan_mekanik\": \"Rantai perlu pelumasan rutin\"\n}" }
+          }
+        },
+        {
+          "name": "Riwayat per No Polisi",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/history?no_polisi=B1234XYZ" }
+        }
+      ]
+    }
+  ]
+}

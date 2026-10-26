@@ -1,0 +1,244 @@
+openapi: 3.0.3
+info:
+  title: RESTful API Layanan Penjadwalan Servis dan Manajemen Riwayat Perawatan Berkala Bengkel Motor
+  version: 1.0.0
+  description: >
+    Backend REST API bengkel motor (Kelompok 2). Autentikasi berbasis token
+    (Bearer). Kode status HTTP standar: 200, 201, 401, 403, 404, 409, 422.
+servers:
+  - url: http://localhost:8000
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        nama: { type: string }
+        no_hp: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [pelanggan, mekanik, admin] }
+    Vehicle:
+      type: object
+      properties:
+        id: { type: integer }
+        user_id: { type: integer }
+        no_polisi: { type: string, example: B1234XYZ }
+        merk: { type: string, example: Honda }
+        model: { type: string, example: Beat }
+        tahun: { type: integer, example: 2021 }
+    Slot:
+      type: object
+      properties:
+        id: { type: integer }
+        tanggal: { type: string, format: date }
+        jam_mulai: { type: string, example: "08:00:00" }
+        kuota_maksimal: { type: integer }
+        terisi: { type: integer }
+        sisa_kuota: { type: integer }
+    Booking:
+      type: object
+      properties:
+        id: { type: integer }
+        vehicle_id: { type: integer }
+        slot_id: { type: integer }
+        keluhan: { type: string }
+        status: { type: string, enum: [booked, checked_in, in_progress, completed, cancelled] }
+security:
+  - bearerAuth: []
+paths:
+  /api/auth/register:
+    post:
+      summary: Registrasi akun (default role pelanggan)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nama, no_hp, email, password]
+              properties:
+                nama: { type: string }
+                no_hp: { type: string }
+                email: { type: string }
+                password: { type: string, format: password }
+      responses:
+        '201': { description: Registrasi berhasil, token diterbitkan }
+        '409': { description: Email sudah terdaftar }
+        '422': { description: Validasi gagal }
+  /api/auth/login:
+    post:
+      summary: Login, mengembalikan token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string, format: password }
+      responses:
+        '200': { description: Login berhasil }
+        '401': { description: Email atau password salah }
+  /api/auth/me:
+    get:
+      summary: Profil pengguna yang sedang login
+      responses:
+        '200': { description: OK }
+        '401': { description: Tidak terautentikasi }
+  /api/auth/logout:
+    post:
+      summary: Cabut token
+      responses:
+        '200': { description: Logout berhasil }
+  /api/vehicles:
+    get:
+      summary: Daftar kendaraan milik pelanggan
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Tambah kendaraan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [no_polisi, merk, model, tahun]
+              properties:
+                no_polisi: { type: string }
+                merk: { type: string }
+                model: { type: string }
+                tahun: { type: integer }
+      responses:
+        '201': { description: Dibuat }
+        '409': { description: Nomor polisi sudah terdaftar }
+        '422': { description: Validasi gagal }
+  /api/vehicles/{id}:
+    put:
+      summary: Ubah kendaraan (pemilik)
+      parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+      responses:
+        '200': { description: Diperbarui }
+        '404': { description: Tidak ditemukan }
+    delete:
+      summary: Hapus kendaraan (pemilik)
+      parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+      responses:
+        '200': { description: Dihapus }
+        '404': { description: Tidak ditemukan }
+  /api/slots:
+    get:
+      summary: Daftar slot & sisa kuota pada tanggal
+      security: []
+      parameters: [{ name: tanggal, in: query, required: true, schema: { type: string, format: date } }]
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Buat slot (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tanggal, jam_mulai, kuota_maksimal]
+              properties:
+                tanggal: { type: string, format: date }
+                jam_mulai: { type: string, example: "08:00" }
+                kuota_maksimal: { type: integer }
+      responses:
+        '201': { description: Dibuat }
+        '409': { description: Slot ganda }
+  /api/slots/available:
+    get:
+      summary: Tanggal 14 hari ke depan yang masih tersedia
+      security: []
+      responses:
+        '200': { description: OK }
+  /api/bookings:
+    get:
+      summary: Daftar booking (admin = semua, pelanggan = miliknya)
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Reservasi slot (pemilik kendaraan; kuota divalidasi atomik)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vehicle_id, slot_id]
+              properties:
+                vehicle_id: { type: integer }
+                slot_id: { type: integer }
+                keluhan: { type: string }
+      responses:
+        '201': { description: Reservasi dibuat }
+        '404': { description: Slot/kendaraan tidak ditemukan }
+        '409': { description: Kuota slot penuh }
+  /api/bookings/{id}:
+    get:
+      summary: Detail booking
+      parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+      responses:
+        '200': { description: OK }
+        '403': { description: Bukan pemilik }
+    delete:
+      summary: Batalkan booking (kuota dikembalikan)
+      parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+      responses:
+        '200': { description: Dibatalkan }
+        '409': { description: Tidak dapat dibatalkan }
+  /api/bookings/{id}/status:
+    put:
+      summary: Ubah status pengerjaan (mekanik/admin)
+      parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [booked, checked_in, in_progress, completed, cancelled] }
+      responses:
+        '200': { description: Diperbarui }
+        '403': { description: Bukan mekanik/admin }
+  /api/service-records:
+    post:
+      summary: Catat tindakan servis & suku cadang (mekanik/admin); booking otomatis completed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [booking_id, odometer_km, tindakan]
+              properties:
+                booking_id: { type: integer }
+                odometer_km: { type: integer }
+                tindakan: { type: string }
+                suku_cadang: { type: string }
+                catatan_mekanik: { type: string }
+      responses:
+        '201': { description: Catatan disimpan }
+        '409': { description: Booking sudah memiliki catatan }
+  /api/history:
+    get:
+      summary: Riwayat servis per nomor polisi (digital service logbook)
+      parameters: [{ name: no_polisi, in: query, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK }
+        '403': { description: Bukan pemilik kendaraan }
+        '404': { description: Kendaraan tidak ditemukan }
