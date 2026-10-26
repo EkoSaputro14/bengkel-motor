@@ -1,101 +1,1906 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
-  title: Bengkel Motor REST API
+  title: Bengkel Motor REST API Specification
   description: >-
-    Dokumentasi spesifikasi RESTful API (API-First) untuk Sistem Informasi Booking 
-    dan Manajemen Servis Bengkel Motor (/api/v1) menggunakan Laravel Sanctum dan Role-Based Access Control (CUSTOMER, MECHANIC, ADMIN).
+    Spesifikasi RESTful API Kontrak v1 (API-First Architecture) untuk Sistem
+    Informasi Penjadwalan Servis dan Manajemen Riwayat Perawatan Berkala Bengkel Motor.
+    Menggunakan Laravel Sanctum Bearer Token, Role-Based Access Control (CUSTOMER, MECHANIC, ADMIN),
+    dan kontrol konkurensi pemesanan slot servis.
   version: 1.0.0
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
   contact:
-    name: Kelompok #2 - Pemrograman Web Servis
+    name: Tim Pengembang Kelompok 2 - Pemrograman Web Service
+    email: pocox3nfcntpro@gmail.com
+    url: https://bengkel.ekohomelab.online
 
 servers:
-  - url: http://localhost:8000/api
-    description: Local Development Server (Laragon / Artisan Serve)
+  - url: https://bengkel.ekohomelab.online/api
+    description: Production Server (Cloudflare Tunnel Live)
+  - url: https://staging.ekohomelab.online/api
+    description: Staging & UAT Testing Server
+
+security:
+  - bearerAuth: []
 
 tags:
   - name: Health Check
-    description: Endpoint untuk memeriksa status operasional server API
+    description: Operasional dan status kesehatan server API
   - name: Auth
-    description: Autentikasi pengguna (Register, Login, Profil Me, Logout)
-  - name: Service Slots
-    description: Informasi kuota dan jadwal slot servis bengkel
+    description: Autentikasi pengguna, registrasi pelanggan, dan manajemen sesi
+  - name: User Profile
+    description: Pengelolaan data diri dan kredensial pengguna yang sedang login
   - name: Vehicles
-    description: Manajemen data kendaraan bermotor pelanggan
+    description: Manajemen armada sepeda motor milik pelanggan
+  - name: Service Slots
+    description: Alokasi kuota dan jadwal slot harian bengkel
   - name: Bookings
-    description: Pemesanan jadwal servis, pembatalan, dan antrean
+    description: Pemesanan slot servis, antrean, dan pembatalan
   - name: Service Records
-    description: Pencatatan hasil servis oleh mekanik dan pencarian riwayat berdasarkan nomor polisi
-  - name: Admin
-    description: Endpoint khusus pengelolaan operasional oleh Administrator (role ADMIN)
+    description: Pencatatan pengerjaan logbook servis dan penggantian suku cadang oleh mekanik
+  - name: History Tracking
+    description: Pelacakan publik riwayat perawatan berdasarkan nomor polisi motor
+  - name: Admin Management
+    description: Operasional master data khusus Administrator
 
 paths:
   /health:
     get:
+      operationId: getGlobalHealth
       tags:
         - Health Check
-      summary: Global Health Check
-      description: Memeriksa status kesehatan global REST API Bengkel Motor.
+      summary: Global System Health Check
+      description: Memeriksa ketersediaan server utama, versi runtime PHP, dan konektivitas dasar.
+      security: []
       responses:
         '200':
           description: Server berjalan normal
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Bengkel Motor REST API is healthy and operational.
-                  data:
-                    type: object
-                    properties:
-                      app_name:
-                        type: string
-                        example: Bengkel Motor API
-                      framework:
-                        type: string
-                        example: Laravel 11.x
-                      php_version:
-                        type: string
-                        example: 8.3.0
-                      timestamp:
-                        type: string
-                        format: date-time
-                        example: '2026-10-25T20:00:00+07:00'
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                healthSuccess:
+                  summary: Respon Normal
+                  value:
+                    status: success
+                    message: Bengkel Motor REST API is healthy and operational.
+                    data:
+                      app_name: Bengkel Motor API
+                      framework: Laravel 12.x
+                      php_version: 8.3.0
+                      timestamp: '2026-10-25T20:00:00+07:00'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /v1/health:
     get:
+      operationId: getV1Health
       tags:
         - Health Check
       summary: Health Check API v1
-      description: Memeriksa status operasional khusus untuk endpoint API versi 1 (v1).
+      description: Memeriksa kesiapan endpoint spesifik versi 1 (v1) dan koneksi database.
+      security: []
       responses:
         '200':
-          description: API v1 berjalan normal
+          description: API v1 aktif dan operasional
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Bengkel Motor REST API v1 is operational.
-                  data:
-                    type: object
-                    properties:
-                      api_version:
-                        type: string
-                        example: v1
-                      framework:
-                        type: string
-                        example: Laravel 11.x
-                      timestamp:
-                        type: string
-                        format: date-time
-                        example: '2026-10-25T20:00:00+07:00'
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                v1HealthSuccess:
+                  summary: Respon Sukses API v1
+                  value:
+                    status: success
+                    message: Bengkel Motor REST API v1 is operational.
+                    data:
+                      api_version: v1
+                      framework: Laravel 12.x
+                      timestamp: '2026-10-25T20:00:00+07:00'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/auth/register:
+    post:
+      operationId: registerCustomer
+      tags:
+        - Auth
+      summary: Pendaftaran Akun Pelanggan Baru
+      description: Mendaftarkan akun pelanggan baru dengan hak akses default role CUSTOMER.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              customerRegistration:
+                summary: Contoh Pendaftaran Pelanggan
+                value:
+                  nama: Eko Saputro
+                  email: eko@gmail.com
+                  no_hp: '081234567890'
+                  password: password123
+                  password_confirmation: password123
+      responses:
+        '201':
+          description: Pendaftaran berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+              examples:
+                createdSuccess:
+                  summary: Registrasi Berhasil
+                  value:
+                    status: success
+                    message: Pendaftaran akun pelanggan berhasil.
+                    data:
+                      user:
+                        id: 5
+                        nama: Eko Saputro
+                        email: eko@gmail.com
+                        no_hp: '081234567890'
+                        role: CUSTOMER
+                        created_at: '2026-10-25T10:00:00+07:00'
+                      token: 1|sanctum_token_string_example_abc123
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+
+  /v1/auth/login:
+    post:
+      operationId: loginUser
+      tags:
+        - Auth
+      summary: Login Pengguna & Penerbitan Token
+      description: Otentikasi kredensial pengguna dan menerbitkan Bearer Token Sanctum.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              userLogin:
+                summary: Contoh Kredensial Login
+                value:
+                  email: eko@gmail.com
+                  password: password123
+      responses:
+        '200':
+          description: Login berhasil dan token diterbitkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+              examples:
+                loginSuccess:
+                  summary: Login Berhasil
+                  value:
+                    status: success
+                    message: Login berhasil. Selamat datang kembali.
+                    data:
+                      user:
+                        id: 5
+                        nama: Eko Saputro
+                        email: eko@gmail.com
+                        no_hp: '081234567890'
+                        role: CUSTOMER
+                        created_at: '2026-10-25T10:00:00+07:00'
+                      token: 2|sanctum_token_active_xyz789
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+
+  /v1/auth/logout:
+    post:
+      operationId: logoutUser
+      tags:
+        - Auth
+      summary: Logout Pengguna
+      description: Mencabut dan menghapus Bearer Token yang sedang aktif di sesi saat ini.
+      responses:
+        '200':
+          description: Logout berhasil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponse'
+              examples:
+                logoutSuccess:
+                  summary: Logout Berhasil
+                  value:
+                    status: success
+                    message: Logout berhasil. Token telah dicabut.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /v1/me:
+    get:
+      operationId: getCurrentUserProfile
+      tags:
+        - User Profile
+      summary: Profil Pengguna Login
+      description: Mengambil detail informasi profil dan role akun yang sedang terotentikasi.
+      responses:
+        '200':
+          description: Data profil berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              examples:
+                profileDetail:
+                  summary: Profil Saya
+                  value:
+                    status: success
+                    message: Data profil pengguna berhasil diambil.
+                    data:
+                      id: 5
+                      nama: Eko Saputro
+                      email: eko@gmail.com
+                      no_hp: '081234567890'
+                      role: CUSTOMER
+                      created_at: '2026-10-25T10:00:00+07:00'
+                      updated_at: '2026-10-25T10:00:00+07:00'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    patch:
+      operationId: updateCurrentUserProfile
+      tags:
+        - User Profile
+      summary: Perbarui Profil & Kata Sandi
+      description: Mengubah data diri pribadi atau mengganti kata sandi akun pengguna.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+            examples:
+              updateNamePhone:
+                summary: Perbarui Nama & No HP
+                value:
+                  nama: Eko Saputro, S.Kom.
+                  no_hp: '081298765432'
+      responses:
+        '200':
+          description: Profil berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+
+  /v1/users:
+    get:
+      operationId: listAllUsers
+      tags:
+        - Admin Management
+      summary: Master Daftar Seluruh Pengguna
+      description: Mengambil daftar pengguna sistem dengan filter role (Khusus Administrator).
+      parameters:
+        - name: role
+          in: query
+          required: false
+          description: Filter berdasarkan peran pengguna
+          schema:
+            type: string
+            enum: [CUSTOMER, MECHANIC, ADMIN]
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Daftar pengguna berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /v1/vehicles:
+    get:
+      operationId: listCustomerVehicles
+      tags:
+        - Vehicles
+      summary: Daftar Sepeda Motor Pelanggan
+      description: Mengambil koleksi sepeda motor terdaftar milik pelanggan yang sedang login.
+      parameters:
+        - name: sort
+          in: query
+          required: false
+          description: Urutan data kendaraan
+          schema:
+            type: string
+            enum: [created_at, -created_at, no_polisi, -no_polisi, tahun, -tahun]
+            default: -created_at
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Koleksi kendaraan berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleListResponse'
+              examples:
+                vehicleCollection:
+                  summary: Daftar Motor
+                  value:
+                    status: success
+                    message: Daftar sepeda motor berhasil diambil.
+                    data:
+                      - id: 1
+                        user_id: 5
+                        no_polisi: G 2222 KL
+                        merk: Yamaha
+                        model: NMAX Turbo 155
+                        tahun: 2024
+                        created_at: '2026-10-25T11:00:00+07:00'
+                    meta:
+                      current_page: 1
+                      per_page: 15
+                      total: 1
+                      total_pages: 1
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      operationId: createNewVehicle
+      tags:
+        - Vehicles
+      summary: Daftarkan Sepeda Motor Baru
+      description: Menambahkan unit sepeda motor baru ke dalam daftar kepemilikan pelanggan.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVehicleRequest'
+            examples:
+              newVehicle:
+                summary: Motor Baru
+                value:
+                  no_polisi: G 2222 KL
+                  merk: Yamaha
+                  model: NMAX Turbo 155
+                  tahun: 2024
+      responses:
+        '201':
+          description: Sepeda motor berhasil didaftarkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+
+  /v1/vehicles/{id}:
+    get:
+      operationId: getVehicleDetail
+      tags:
+        - Vehicles
+      summary: Detail Sepeda Motor
+      description: Mengambil data rinci satu sepeda motor berdasarkan ID (Hanya pemilik atau Admin).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unik sepeda motor
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detail motor berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      operationId: updateVehicleData
+      tags:
+        - Vehicles
+      summary: Perbarui Data Sepeda Motor
+      description: Mengganti informasi unit sepeda motor yang sudah terdaftar.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unik sepeda motor
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVehicleRequest'
+      responses:
+        '200':
+          description: Data motor berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+    delete:
+      operationId: deleteVehicle
+      tags:
+        - Vehicles
+      summary: Hapus Sepeda Motor
+      description: Menghapus unit motor dari akun jika belum memiliki keterikatan servis aktif.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unik sepeda motor
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Motor berhasil dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+
+  /v1/service-slots:
+    get:
+      operationId: listServiceSlots
+      tags:
+        - Service Slots
+      summary: Katalog Jadwal & Kuota Slot Servis
+      description: Menampilkan daftar slot jam servis harian berserta sisa kuota yang tersedia.
+      security: []
+      parameters:
+        - name: tanggal
+          in: query
+          required: false
+          description: Filter tanggal slot (Format YYYY-MM-DD, default hari ini)
+          schema:
+            type: string
+            format: date
+            example: '2026-10-26'
+        - name: tersedia
+          in: query
+          required: false
+          description: Hanya tampilkan slot dengan kuota tersisa
+          schema:
+            type: boolean
+        - name: sort
+          in: query
+          required: false
+          description: Urutan slot waktu
+          schema:
+            type: string
+            enum: [jam_mulai, -jam_mulai, kuota_maksimal, -kuota_maksimal, terisi, -terisi]
+            default: jam_mulai
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Katalog slot servis berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotListResponse'
+              examples:
+                slotCollection:
+                  summary: Daftar Slot
+                  value:
+                    status: success
+                    message: Katalog slot servis berhasil diambil.
+                    data:
+                      - id: 1
+                        tanggal: '2026-10-26'
+                        jam_mulai: '08:00:00'
+                        kuota_maksimal: 5
+                        terisi: 2
+                        is_available: true
+                      - id: 2
+                        tanggal: '2026-10-26'
+                        jam_mulai: '09:00:00'
+                        kuota_maksimal: 5
+                        terisi: 5
+                        is_available: false
+                    meta:
+                      current_page: 1
+                      per_page: 15
+                      total: 2
+                      total_pages: 1
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+    post:
+      operationId: createServiceSlot
+      tags:
+        - Service Slots
+      summary: Tambah Alokasi Slot Servis
+      description: Membuat alokasi kuota servis baru pada tanggal dan jam tertentu (Khusus Admin).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSlotRequest'
+            examples:
+              newSlot:
+                summary: Buat Slot Baru
+                value:
+                  tanggal: '2026-10-27'
+                  jam_mulai: '10:00:00'
+                  kuota_maksimal: 6
+      responses:
+        '201':
+          description: Slot berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+
+  /v1/service-slots/{id}:
+    put:
+      operationId: updateServiceSlotQuota
+      tags:
+        - Service Slots
+      summary: Perbarui Kuota Slot Servis
+      description: Mengubah kapasitas kuota maksimal pada slot jam servis tertentu (Khusus Admin).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unik slot servis
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - kuota_maksimal
+              properties:
+                kuota_maksimal:
+                  type: integer
+                  minimum: 1
+                  maximum: 50
+                  example: 8
+      responses:
+        '200':
+          description: Kuota slot berhasil diubah
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+    delete:
+      operationId: deleteServiceSlot
+      tags:
+        - Service Slots
+      summary: Hapus Slot Servis
+      description: Menghapus slot servis jika belum memiliki antrean booking (Khusus Admin).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unik slot servis
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Slot servis berhasil dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseSuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+
+  /v1/bookings:
+    get:
+      operationId: listBookings
+      tags:
+        - Bookings
+      summary: Daftar Reservasi Booking Servis
+      description: Mengambil daftar transaksi booking servis dengan filter status, kendaraan, dan pencarian.
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Filter status pengerjaan booking
+          schema:
+            type: string
+            enum: [CONFIRMED, IN_SERVICE, COMPLETED, CANCELLED]
+        - name: vehicle_id
+          in: query
+          required: false
+          description: Filter booking milik sepeda motor tertentu
+          schema:
+            type: integer
+        - name: q
+          in: query
+          required: false
+          description: Pencarian kode booking atau nama pelanggan
+          schema:
+            type: string
+        - name: sort
+          in: query
+          required: false
+          description: Urutan data booking
+          schema:
+            type: string
+            enum: [created_at, -created_at, id, -id, status, -status]
+            default: -created_at
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Koleksi booking berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingListResponse'
+              examples:
+                bookingCollection:
+                  summary: Contoh Daftar Booking
+                  value:
+                    status: success
+                    message: Daftar booking servis berhasil diambil.
+                    data:
+                      - id: 10
+                        booking_code: BK-20261025-A1B2
+                        user_id: 5
+                        vehicle_id: 1
+                        slot_id: 1
+                        keluhan: Servis berkala 10.000 KM dan ganti oli Yamalube Super Sport
+                        status: CONFIRMED
+                        vehicle:
+                          id: 1
+                          user_id: 5
+                          no_polisi: G 2222 KL
+                          merk: Yamaha
+                          model: NMAX Turbo 155
+                          tahun: 2024
+                          created_at: '2026-10-25T11:00:00+07:00'
+                        slot:
+                          id: 1
+                          tanggal: '2026-10-26'
+                          jam_mulai: '08:00:00'
+                          kuota_maksimal: 5
+                          terisi: 2
+                          is_available: true
+                        created_at: '2026-10-25T14:00:00+07:00'
+                    meta:
+                      current_page: 1
+                      per_page: 15
+                      total: 1
+                      total_pages: 1
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      operationId: createBookingReservation
+      tags:
+        - Bookings
+      summary: Reservasi Booking Servis (Auto-Confirm & Lock)
+      description: >-
+        Melakukan reservasi slot servis dengan mekanisme kontrol konkurensi database
+        (pessimistic lock anti-overbooking) dan konfirmasi instan.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+            examples:
+              bookingRequest:
+                summary: Pengajuan Booking Servis
+                value:
+                  vehicle_id: 1
+                  slot_id: 1
+                  keluhan: Servis berkala 10.000 KM dan ganti oli Yamalube Super Sport
+      responses:
+        '201':
+          description: Booking berhasil dibuat dan terkonfirmasi otomatis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          description: Kuota slot telah habis terisi oleh transaksi lain
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                quotaFull:
+                  summary: Kuota Slot Habis
+                  value:
+                    status: error
+                    message: Kuota slot servis pada jam ini telah penuh. Silakan pilih slot lain.
+                    error_code: SLOT_QUOTA_EXCEEDED
+                    timestamp: '2026-10-25T14:00:00+07:00'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+
+  /v1/bookings/{id}:
+    get:
+      operationId: getBookingDetail
+      tags:
+        - Bookings
+      summary: Detail Transaksi Booking
+      description: Melihat rincian lengkap satu transaksi booking servis.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unik transaksi booking
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detail booking berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /v1/bookings/{id}/cancel:
+    patch:
+      operationId: cancelBooking
+      tags:
+        - Bookings
+      summary: Pembatalan Booking Servis
+      description: Membatalkan booking berstatus CONFIRMED dan otomatis memulihkan kuota slot terkait.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unik transaksi booking
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - alasan_batal
+              properties:
+                alasan_batal:
+                  type: string
+                  example: Ada keperluan mendadak di luar kota
+      responses:
+        '200':
+          description: Booking berhasil dibatalkan dan kuota dipulihkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+
+  /v1/mechanic/bookings:
+    get:
+      operationId: listMechanicQueueBookings
+      tags:
+        - Bookings
+      summary: Antrean Servis Pit Mekanik
+      description: Mengambil antrean sepeda motor yang siap dikerjakan di pit servis (Khusus Mekanik/Admin).
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Filter status antrean mekanik
+          schema:
+            type: string
+            enum: [CONFIRMED, IN_SERVICE]
+            default: CONFIRMED
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Antrean pit mekanik berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingListResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /v1/service-records:
+    post:
+      operationId: createServiceRecord
+      tags:
+        - Service Records
+      summary: Catat Hasil Pengerjaan Logbook Servis
+      description: Menyimpan dokumen rekam servis digital, odometer, tindakan, dan rincian suku cadang.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRecordRequest'
+            examples:
+              logbookEntry:
+                summary: Rekam Servis Selesai
+                value:
+                  booking_id: 10
+                  odometer_km: 10450
+                  tindakan: Servis CVT, kuras oli mesin, setel kerenggangan klep, cek busi
+                  biaya_jasa: 45000
+                  catatan_mekanik: Kondisi mesin sehat, kampas rem depan masih 60%
+                  suku_cadang:
+                    - nama: Oli Yamalube Super Sport 10W-40
+                      qty: 1
+                      harga_satuan: 65000
+                      subtotal: 65000
+                      keterangan: Suku cadang original
+      responses:
+        '201':
+          description: Rekam servis digital berhasil dicatat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+
+  /v1/service-records/{id}:
+    get:
+      operationId: getServiceRecordDetail
+      tags:
+        - Service Records
+      summary: Detail Logbook Rekam Servis
+      description: Mengambil rincian tindakan servis, biaya, dan nota penggantian suku cadang.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unik rekam servis
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detail rekam servis berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /v1/bookings/{id}/records:
+    get:
+      operationId: getBookingServiceRecords
+      tags:
+        - Service Records
+      summary: Rekam Servis Berdasarkan Booking ID
+      description: Mengambil lembar pengerjaan servis yang berelasi dengan booking tertentu.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID transaksi booking
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Data rekam servis booking berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordDetailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /v1/service-history:
+    get:
+      operationId: searchServiceHistoryByPlate
+      tags:
+        - History Tracking
+      summary: Lacak Riwayat Servis via Plat Nomor
+      description: Pelacakan publik riwayat rekam perawatan motor secara kronologis berdasarkan plat nomor polisi.
+      security: []
+      parameters:
+        - name: no_polisi
+          in: query
+          required: true
+          description: Nomor polisi sepeda motor yang ingin dilacak
+          schema:
+            type: string
+            example: G 2222 KL
+        - name: sort
+          in: query
+          required: false
+          description: Urutan kronologis riwayat servis
+          schema:
+            type: string
+            enum: [created_at, -created_at]
+            default: -created_at
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Riwayat servis kendaraan berhasil ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceHistoryListResponse'
+              examples:
+                historyFound:
+                  summary: Riwayat Ditemukan
+                  value:
+                    status: success
+                    message: Riwayat servis untuk plat nomor G 2222 KL berhasil ditemukan.
+                    data:
+                      vehicle:
+                        id: 1
+                        user_id: 5
+                        no_polisi: G 2222 KL
+                        merk: Yamaha
+                        model: NMAX Turbo 155
+                        tahun: 2024
+                        created_at: '2026-10-25T11:00:00+07:00'
+                      records:
+                        - id: 1
+                          booking_id: 10
+                          mechanic_id: 2
+                          odometer_km: 10450
+                          tindakan: Servis berkala dan ganti oli Yamalube
+                          catatan_mekanik: Motor dalam kondisi sangat baik
+                          biaya_jasa: 45000
+                          biaya_total: 110000
+                          created_at: '2026-10-25T15:30:00+07:00'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Masukkan token autentikasi Sanctum dengan format `Bearer <token>`
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      required: false
+      description: Nomor halaman data untuk paginasi (1-indexed)
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+
+    PerPageParam:
+      name: per_page
+      in: query
+      required: false
+      description: Jumlah baris data per halaman (Default 15, Maksimum 50)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 15
+        example: 15
+
+  schemas:
+    # 1. Reusable Error Schema
+    Error:
+      type: object
+      required:
+        - status
+        - message
+        - error_code
+        - timestamp
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
+          example: Terjadi kesalahan pada permintaan Anda.
+        error_code:
+          type: string
+          example: RESOURCE_NOT_FOUND
+        timestamp:
+          type: string
+          format: date-time
+          example: '2026-10-25T20:00:00+07:00'
+
+    # 2. Reusable ValidationError Schema
+    ValidationError:
+      type: object
+      required:
+        - status
+        - message
+        - errors
+        - timestamp
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+          example: Data yang dikirimkan tidak valid.
+        errors:
+          type: object
+          description: Pemetaan nama field ke daftar pesan kegagalan validasi
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            email:
+              - Format email tidak valid atau sudah terdaftar.
+            no_polisi:
+              - Nomor polisi wajib diisi dengan format standar.
+        timestamp:
+          type: string
+          format: date-time
+          example: '2026-10-25T20:00:00+07:00'
+
+    # 3. Reusable User Schema
+    User:
+      type: object
+      required:
+        - id
+        - nama
+        - email
+        - no_hp
+        - role
+        - created_at
+      properties:
+        id:
+          type: integer
+          example: 5
+        nama:
+          type: string
+          example: Eko Saputro
+        email:
+          type: string
+          format: email
+          example: eko@gmail.com
+        no_hp:
+          type: string
+          example: '081234567890'
+        role:
+          type: string
+          enum: [CUSTOMER, MECHANIC, ADMIN]
+          example: CUSTOMER
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-10-25T10:00:00+07:00'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2026-10-25T10:00:00+07:00'
+
+    # 4. Reusable Vehicle Schema
+    Vehicle:
+      type: object
+      required:
+        - id
+        - user_id
+        - no_polisi
+        - merk
+        - model
+        - tahun
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 5
+        no_polisi:
+          type: string
+          example: G 2222 KL
+        merk:
+          type: string
+          example: Yamaha
+        model:
+          type: string
+          example: NMAX Turbo 155
+        tahun:
+          type: integer
+          minimum: 1990
+          maximum: 2030
+          example: 2024
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-10-25T11:00:00+07:00'
+
+    # 5. Reusable ServiceSlot Schema
+    ServiceSlot:
+      type: object
+      required:
+        - id
+        - tanggal
+        - jam_mulai
+        - kuota_maksimal
+        - terisi
+        - is_available
+      properties:
+        id:
+          type: integer
+          example: 1
+        tanggal:
+          type: string
+          format: date
+          example: '2026-10-26'
+        jam_mulai:
+          type: string
+          example: '08:00:00'
+        kuota_maksimal:
+          type: integer
+          example: 5
+        terisi:
+          type: integer
+          example: 2
+        is_available:
+          type: boolean
+          example: true
+
+    # 6. Reusable Booking Schema
+    Booking:
+      type: object
+      required:
+        - id
+        - booking_code
+        - user_id
+        - vehicle_id
+        - slot_id
+        - keluhan
+        - status
+        - created_at
+      properties:
+        id:
+          type: integer
+          example: 10
+        booking_code:
+          type: string
+          example: BK-20261025-A1B2
+        user_id:
+          type: integer
+          example: 5
+        vehicle_id:
+          type: integer
+          example: 1
+        slot_id:
+          type: integer
+          example: 1
+        keluhan:
+          type: string
+          example: Servis berkala 10.000 KM dan ganti oli Yamalube
+        status:
+          type: string
+          enum: [CONFIRMED, IN_SERVICE, COMPLETED, CANCELLED]
+          example: CONFIRMED
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+        slot:
+          $ref: '#/components/schemas/ServiceSlot'
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-10-25T14:00:00+07:00'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2026-10-25T14:00:00+07:00'
+
+    # 7. Reusable PartItem Schema
+    PartItem:
+      type: object
+      required:
+        - nama
+        - qty
+        - harga_satuan
+        - subtotal
+      properties:
+        nama:
+          type: string
+          example: Oli Yamalube Super Sport 10W-40
+        qty:
+          type: integer
+          minimum: 1
+          example: 1
+        harga_satuan:
+          type: integer
+          example: 65000
+        subtotal:
+          type: integer
+          example: 65000
+        keterangan:
+          type: string
+          example: Original Suku Cadang Resmi
+
+    # 8. Reusable ServiceRecord Schema
+    ServiceRecord:
+      type: object
+      required:
+        - id
+        - booking_id
+        - mechanic_id
+        - odometer_km
+        - tindakan
+        - biaya_jasa
+        - biaya_total
+        - created_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        booking_id:
+          type: integer
+          example: 10
+        mechanic_id:
+          type: integer
+          example: 2
+        odometer_km:
+          type: integer
+          example: 10450
+        tindakan:
+          type: string
+          example: Servis berkala, kuras oli, ganti kampas rem depan
+        catatan_mekanik:
+          type: string
+          example: Motor dalam kondisi prima, kampas rem belakang masih tebal
+        biaya_jasa:
+          type: integer
+          example: 45000
+        biaya_total:
+          type: integer
+          example: 110000
+        suku_cadang:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartItem'
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-10-25T15:30:00+07:00'
+
+    # Pagination Components
+    PaginationMeta:
+      type: object
+      required:
+        - current_page
+        - per_page
+        - total
+        - total_pages
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        per_page:
+          type: integer
+          example: 15
+        total:
+          type: integer
+          example: 45
+        total_pages:
+          type: integer
+          example: 3
+
+    # Request Payloads
+    RegisterRequest:
+      type: object
+      required:
+        - nama
+        - email
+        - no_hp
+        - password
+        - password_confirmation
+      properties:
+        nama:
+          type: string
+          example: Eko Saputro
+        email:
+          type: string
+          format: email
+          example: eko@gmail.com
+        no_hp:
+          type: string
+          example: '081234567890'
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: password123
+        password_confirmation:
+          type: string
+          format: password
+          minLength: 8
+          example: password123
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: eko@gmail.com
+        password:
+          type: string
+          format: password
+          example: password123
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        nama:
+          type: string
+          example: Eko Saputro
+        no_hp:
+          type: string
+          example: '081234567890'
+        password_lama:
+          type: string
+          format: password
+          example: password123
+        password_baru:
+          type: string
+          format: password
+          minLength: 8
+          example: passwordBaru123
+        password_baru_confirmation:
+          type: string
+          format: password
+          minLength: 8
+          example: passwordBaru123
+
+    CreateVehicleRequest:
+      type: object
+      required:
+        - no_polisi
+        - merk
+        - model
+        - tahun
+      properties:
+        no_polisi:
+          type: string
+          example: G 2222 KL
+        merk:
+          type: string
+          example: Yamaha
+        model:
+          type: string
+          example: NMAX Turbo 155
+        tahun:
+          type: integer
+          minimum: 1990
+          maximum: 2030
+          example: 2024
+
+    CreateSlotRequest:
+      type: object
+      required:
+        - tanggal
+        - jam_mulai
+        - kuota_maksimal
+      properties:
+        tanggal:
+          type: string
+          format: date
+          example: '2026-10-27'
+        jam_mulai:
+          type: string
+          example: '10:00:00'
+        kuota_maksimal:
+          type: integer
+          minimum: 1
+          maximum: 50
+          example: 6
+
+    CreateBookingRequest:
+      type: object
+      required:
+        - vehicle_id
+        - slot_id
+        - keluhan
+      properties:
+        vehicle_id:
+          type: integer
+          example: 1
+        slot_id:
+          type: integer
+          example: 1
+        keluhan:
+          type: string
+          example: Servis berkala dan ganti oli Yamalube Super Sport
+
+    CreateRecordRequest:
+      type: object
+      required:
+        - booking_id
+        - odometer_km
+        - tindakan
+        - biaya_jasa
+      properties:
+        booking_id:
+          type: integer
+          example: 10
+        odometer_km:
+          type: integer
+          example: 10450
+        tindakan:
+          type: string
+          example: Servis CVT, kuras oli mesin, setel kerenggangan klep
+        biaya_jasa:
+          type: integer
+          example: 45000
+        catatan_mekanik:
+          type: string
+          example: Kondisi mesin sehat, kampas rem masih tebal
+        suku_cadang:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartItem'
+
+    # Generic Responses
+    BaseSuccessResponse:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Operasi berhasil dijalankan.
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Bengkel Motor REST API is healthy and operational.
+        data:
+          type: object
+          additionalProperties: true
+
+    AuthSuccessResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Otentikasi berhasil.
+        data:
+          type: object
+          required:
+            - user
+            - token
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+              example: 1|sanctum_token_string_example
+
+    UserResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Data profil berhasil diambil.
+        data:
+          $ref: '#/components/schemas/User'
+
+    UserListResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+        - meta
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Daftar pengguna berhasil diambil.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    VehicleDetailResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Data sepeda motor berhasil diambil.
+        data:
+          $ref: '#/components/schemas/Vehicle'
+
+    VehicleListResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+        - meta
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Daftar sepeda motor berhasil diambil.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vehicle'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    SlotDetailResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Data slot servis berhasil diambil.
+        data:
+          $ref: '#/components/schemas/ServiceSlot'
+
+    SlotListResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+        - meta
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Katalog slot servis berhasil diambil.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceSlot'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    BookingDetailResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Data transaksi booking berhasil diambil.
+        data:
+          $ref: '#/components/schemas/Booking'
+
+    BookingListResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+        - meta
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Daftar booking servis berhasil diambil.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Booking'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    RecordDetailResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Detail logbook rekam servis berhasil diambil.
+        data:
+          $ref: '#/components/schemas/ServiceRecord'
+
+    ServiceHistoryListResponse:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Riwayat servis kendaraan berhasil diambil.
+        data:
+          type: object
+          required:
+            - vehicle
+            - records
+          properties:
+            vehicle:
+              $ref: '#/components/schemas/Vehicle'
+            records:
+              type: array
+              items:
+                $ref: '#/components/schemas/ServiceRecord'
+
+  responses:
+    BadRequestError:
+      description: Permintaan tidak dapat diproses karena sintaks tidak valid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            badRequest:
+              summary: Bad Request
+              value:
+                status: error
+                message: Sintaks permintaan atau parameter query tidak valid.
+                error_code: BAD_REQUEST
+                timestamp: '2026-10-25T20:00:00+07:00'
+
+    UnauthorizedError:
+      description: Otentikasi gagal atau token tidak disertakan
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            unauthorized:
+              summary: Token Tidak Sah
+              value:
+                status: error
+                message: Sesi tidak valid atau token otentikasi tidak ditemukan.
+                error_code: UNAUTHENTICATED
+                timestamp: '2026-10-25T20:00:00+07:00'
+
+    ForbiddenError:
+      description: Hak akses pengguna ditolak (Role tidak memenuhi otorisasi)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            forbiddenRole:
+              summary: Akses Ditolak
+              value:
+                status: error
+                message: Anda tidak memiliki wewenang untuk mengakses sumber daya ini.
+                error_code: FORBIDDEN_ACCESS
+                timestamp: '2026-10-25T20:00:00+07:00'
+
+    NotFoundError:
+      description: Sumber daya yang diminta tidak ditemukan di database
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            resourceNotFound:
+              summary: Data Tidak Ditemukan
+              value:
+                status: error
+                message: Data yang Anda minta tidak ditemukan.
+                error_code: RESOURCE_NOT_FOUND
+                timestamp: '2026-10-25T20:00:00+07:00'
+
+    ConflictError:
+      description: Terjadi konflik data unik atau pelanggaran konkurensi integritas
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            conflictState:
+              summary: Konflik Data
+              value:
+                status: error
+                message: Data dengan identitas unik tersebut telah terdaftar sebelumnya.
+                error_code: CONFLICT_DUPLICATE_ENTRY
+                timestamp: '2026-10-25T20:00:00+07:00'
+
+    ValidationErrorResponse:
+      description: Permintaan ditolak karena kegagalan validasi payload parameter
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+          examples:
+            validationFailed:
+              summary: Validasi Gagal
+              value:
+                status: fail
+                message: Input data tidak memenuhi syarat validasi.
+                errors:
+                  no_polisi:
+                    - Nomor polisi wajib diisi.
+                  tanggal:
+                    - Format tanggal harus berupa YYYY-MM-DD.
+                timestamp: '2026-10-25T20:00:00+07:00'
+
+    InternalServerError:
+      description: Kesalahan internal pada server atau koneksi basis data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            serverError:
+              summary: Gangguan Server
+              value:
+                status: error
+                message: Terjadi gangguan internal pada sistem. Tim teknis sedang menangani.
+                error_code: INTERNAL_SERVER_ERROR
+                timestamp: '2026-10-25T20:00:00+07:00'
