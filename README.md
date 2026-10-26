@@ -6,7 +6,7 @@
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-emerald)](https://web.dev/progressive-web-apps/)
 [![Tests](https://img.shields.io/badge/Tests-26%20Passed%20(112%20assertions)-brightgreen)](#pengujian-otomatis)
 
-Aplikasi web terpadu operasional bengkel motor berbasis **RESTful API** dengan mekanisme **Auto-Confirm Booking**, proteksi *concurrency* / *race condition*, dan **Digital Service Logbook** berbasis nomor polisi kendaraan.
+Aplikasi **Sistem Informasi Layanan Penjadwalan Servis & Manajemen Riwayat Perawatan Berkala Bengkel Motor** merupakan platform web terpadu yang dirancang untuk mengoptimalkan operasional bengkel secara *real-time*. Berbasis **RESTful API**, sistem ini dilengkapi dengan fitur **Auto-Confirm Booking** untuk reservasi instan, proteksi *concurrency* / *race condition* menggunakan *Pessimistic Locking* guna mencegah *overbooking* slot servis, serta **Digital Service Logbook** berbasis nomor polisi kendaraan untuk pencatatan riwayat pemeliharaan secara transparan dan akurat.
 
 Proyek ini dibangun oleh **Kelompok 2** untuk mata kuliah **Pemrograman Web Service (Tahun Akademik 2026/2027)**, Universitas Harkat Negeri:
 1. **Intan Komalasari** (NIM: 23215012)
