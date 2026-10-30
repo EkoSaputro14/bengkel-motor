@@ -64,6 +64,7 @@ export interface SparepartItem {
   soldCount: string;
   intervalKm: string;
   desc: string;
+  sourceUrl?: string;
   specs: { label: string; value: string }[];
   symptoms: string[];
 }
@@ -86,6 +87,7 @@ const SPAREPARTS_DATA: SparepartItem[] = [
     soldCount: '520+ terjual',
     intervalKm: 'Tiap 2.500 - 3.000 KM',
     desc: 'Formula sintetis ester proteksi gesekan ekstrem, menstabilkan temperatur mesin dan respon tarikan spontan.',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Motor_oil.jpg',
     specs: [
       { label: 'Viskositas', value: 'SAE 10W-40 JASO MB / MA2' },
       { label: 'Base Oil', value: 'Semi-Synthetic with Ester Additive' },
@@ -115,6 +117,7 @@ const SPAREPARTS_DATA: SparepartItem[] = [
     soldCount: '380+ terjual',
     intervalKm: 'Tiap 10.000 - 15.000 KM',
     desc: 'Kompon keramik semi-metallic anti decit, daya cengkeram instan tahan panas ekstrem tanpa mengikis rotor.',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Brake_pad.jpg',
     specs: [
       { label: 'Material Gesek', value: 'Semi-Metallic Organic Non-Asbestos' },
       { label: 'Daya Tahan Suhu', value: 'Hingga 450°C Anti Fade' },
@@ -144,6 +147,7 @@ const SPAREPARTS_DATA: SparepartItem[] = [
     soldCount: '610+ terjual',
     intervalKm: 'Tiap 8.000 - 10.000 KM',
     desc: 'Elektroda 0.6mm laser iridium menghadirkan percikan api super fokus, pembakaran tuntas, dan efisiensi BBM tinggi.',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Buj%C3%ADa_Bosch_Yttrium_Super_Plus.JPG',
     specs: [
       { label: 'Ujung Elektroda', value: 'Laser Welded Iridium 0.6 mm' },
       { label: 'Ukuran Ulir', value: 'M10 x 1.0 (Hex Key 16 mm)' },
@@ -173,6 +177,7 @@ const SPAREPARTS_DATA: SparepartItem[] = [
     soldCount: '140+ terjual',
     intervalKm: 'Tiap 30.000 - 40.000 KM',
     desc: 'Baja tahan karat martensitik AISI 420 dengan ventilasi buang panas cepat, anti deformasi saat rem ekstrem.',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Disk_brake_dsc03682.jpg',
     specs: [
       { label: 'Diameter Luar', value: '260 mm (Lebar Ventilasi Maksimal)' },
       { label: 'Bahan Rotor', value: 'Stainless Martensitic High-Grade' },
@@ -202,6 +207,7 @@ const SPAREPARTS_DATA: SparepartItem[] = [
     soldCount: '290+ terjual',
     intervalKm: 'Tiap 18.000 - 20.000 KM',
     desc: 'Kompon silika tinggi dengan alur pembuang air kilat (flash groove), daya cengkeram optimal tanpa licin di aspal basah.',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Pirelli_Diablo_Rosso.jpg',
     specs: [
       { label: 'Dimensi Ukuran', value: '110/70 - 13 / 14 M/C 48P Tubeless' },
       { label: 'Jenis Senyawa', value: 'High-Silica Soft-Medium Dual Compound' },
@@ -231,6 +237,7 @@ const SPAREPARTS_DATA: SparepartItem[] = [
     soldCount: '95+ terjual',
     intervalKm: 'Tiap 25.000 - 30.000 KM',
     desc: 'Ruang ganda gas nitrogen dan oli hidraulik presisi, meredam hentakan jalan rusak tanpa limbung saat berboncengan.',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Mini_Shocks.JPG',
     specs: [
       { label: 'Panjang As ke As', value: '330 mm Adjustable Height' },
       { label: 'Peredam Hentak', value: 'Nitrogen Gas Chamber + Hydraulic Damping' },
@@ -260,6 +267,7 @@ const SPAREPARTS_DATA: SparepartItem[] = [
     soldCount: '780+ terjual',
     intervalKm: 'Tiap 8.000 - 10.000 KM',
     desc: 'Kertas viscose berminyak khusus penangkap debu mikro, mencegah partikel abrasif masuk ke silinder dan ruang bakar.',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Kfz-oelfilter-muenze.jpg',
     specs: [
       { label: 'Material Filter', value: 'Viscous Paper Oil-Treated Media' },
       { label: 'Tingkat Filtrasi', value: 'Menahan 99.2% Partikel Debu 10 Mikron' },
@@ -289,6 +297,7 @@ const SPAREPARTS_DATA: SparepartItem[] = [
     soldCount: '410+ terjual',
     intervalKm: 'Tiap 1.5 - 2 Tahun',
     desc: 'Aki tertutup bebas perawatan (VRLA), arus starter kuat stabil untuk sistem injeksi modern dan kelistrikan lampu LED.',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Photo-CarBattery.jpg',
     specs: [
       { label: 'Tegangan & Kapasitas', value: '12 Volt / 3.5 - 5.0 Ampere Hour' },
       { label: 'Cold Cranking (CCA)', value: '85 CCA Semburan Starter Instan' },
@@ -318,6 +327,7 @@ const SPAREPARTS_DATA: SparepartItem[] = [
     soldCount: '230+ terjual',
     intervalKm: 'Tiap 20.000 - 25.000 KM',
     desc: 'Gir baja karbon tahan aus dengan rantai bushing padat lapis emas anti mulur, transfer tenaga maksimal ke roda belakang.',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Bicycle_chains.JPG',
     specs: [
       { label: 'Ukuran Rantai', value: 'Pitch 428HD (Solid Bushing 120 Links)' },
       { label: 'Material Gir Depan/Belakang', value: 'High-Carbon Steel Induction Hardened' },
@@ -1214,25 +1224,47 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Image Attribution & Open Licensing Note */}
-          <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-slate-400" />
-              <span>
-                <strong>Atribusi Aset Media:</strong> Foto suku cadang dan pelumas bersumber dari basis data terbuka{' '}
-                <a
-                  href="https://commons.wikimedia.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-bold text-slate-700 hover:text-red-600 underline inline-flex items-center gap-0.5"
-                >
-                  Wikimedia Commons
-                  <ExternalLink className="h-2.5 w-2.5" />
-                </a>{' '}
-                berlisensi resmi <em>Creative Commons (CC BY-SA / Public Domain)</em> untuk keperluan edukasi dan praktikum bengkel.
-              </span>
+          <div className="pt-3 border-t border-slate-100 flex flex-col gap-2.5 text-[11px] text-slate-500">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-slate-400 shrink-0" />
+                <span>
+                  <strong>Atribusi Aset Media:</strong> Foto suku cadang dan pelumas bersumber dari basis data terbuka{' '}
+                  <a
+                    href="https://commons.wikimedia.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-slate-700 hover:text-red-600 underline inline-flex items-center gap-0.5"
+                  >
+                    Wikimedia Commons
+                    <ExternalLink className="h-2.5 w-2.5" />
+                  </a>{' '}
+                  berlisensi resmi <em>Creative Commons (CC BY-SA / Public Domain)</em> untuk keperluan edukasi dan praktikum bengkel.
+                </span>
+              </div>
+              <div className="text-slate-400 shrink-0 font-mono text-[10px]">
+                OAS 3.1.0 • WebP Optimized • Zero Copyright Friction
+              </div>
             </div>
-            <div className="text-slate-400 shrink-0 font-mono text-[10px]">
-              OAS 3.1.0 • WebP Optimized • Zero Copyright Friction
+
+            {/* Direct Image Reference Links */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+              <span className="font-bold text-slate-700 shrink-0">Tautan Berkas Sumber:</span>
+              {SPAREPARTS_DATA.map((item) => (
+                item.sourceUrl ? (
+                  <a
+                    key={item.id}
+                    href={item.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-slate-600 hover:text-red-600 hover:underline transition"
+                    title={`Buka berkas ${item.name} di Wikimedia Commons`}
+                  >
+                    <span>{item.name.split(' ')[0]} {item.name.split(' ')[1] || ''}</span>
+                    <ExternalLink className="h-2 w-2 text-slate-400" />
+                  </a>
+                ) : null
+              ))}
             </div>
           </div>
 
@@ -1282,9 +1314,21 @@ export const LandingPage: React.FC = () => {
                     alt={detailModalItem.name}
                     className="w-full h-full object-cover rounded-lg"
                   />
-                  <div className="absolute inset-x-0 bottom-0 bg-slate-900/80 backdrop-blur-xs text-[9px] text-slate-300 text-center py-0.5 px-1 font-mono">
-                    Wikimedia Commons CC
-                  </div>
+                  {detailModalItem.sourceUrl ? (
+                    <a
+                      href={detailModalItem.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="absolute inset-x-0 bottom-0 bg-slate-900/90 hover:bg-red-600 text-[9px] text-white text-center py-1 px-1 font-mono transition flex items-center justify-center gap-1"
+                    >
+                      <span>Lihat Sumber Aset</span>
+                      <ExternalLink className="h-2.5 w-2.5" />
+                    </a>
+                  ) : (
+                    <div className="absolute inset-x-0 bottom-0 bg-slate-900/80 backdrop-blur-xs text-[9px] text-slate-300 text-center py-0.5 px-1 font-mono">
+                      Wikimedia Commons CC
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2 text-center sm:text-left flex-1">
                   <div className="text-xs text-slate-600 leading-relaxed">
