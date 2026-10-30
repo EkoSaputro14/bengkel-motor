@@ -30,6 +30,7 @@ import {
   Calculator,
   Plus,
   Minus,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -1212,6 +1213,29 @@ export const LandingPage: React.FC = () => {
             </a>
           </div>
 
+          {/* Image Attribution & Open Licensing Note */}
+          <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-slate-400" />
+              <span>
+                <strong>Atribusi Aset Media:</strong> Foto suku cadang dan pelumas bersumber dari basis data terbuka{' '}
+                <a
+                  href="https://commons.wikimedia.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold text-slate-700 hover:text-red-600 underline inline-flex items-center gap-0.5"
+                >
+                  Wikimedia Commons
+                  <ExternalLink className="h-2.5 w-2.5" />
+                </a>{' '}
+                berlisensi resmi <em>Creative Commons (CC BY-SA / Public Domain)</em> untuk keperluan edukasi dan praktikum bengkel.
+              </span>
+            </div>
+            <div className="text-slate-400 shrink-0 font-mono text-[10px]">
+              OAS 3.1.0 • WebP Optimized • Zero Copyright Friction
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -1252,12 +1276,15 @@ export const LandingPage: React.FC = () => {
             <div className="p-5 sm:p-6 space-y-6 overflow-y-auto flex-1">
               {/* Product Preview + Stock Badge */}
               <div className="flex flex-col sm:flex-row items-center gap-5 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-                <div className="w-32 h-32 bg-white rounded-xl overflow-hidden border border-slate-200 p-2 shrink-0 flex items-center justify-center shadow-2xs">
+                <div className="w-32 h-32 bg-white rounded-xl overflow-hidden border border-slate-200 p-2 shrink-0 flex items-center justify-center shadow-2xs relative group">
                   <img
                     src={detailModalItem.image}
                     alt={detailModalItem.name}
                     className="w-full h-full object-cover rounded-lg"
                   />
+                  <div className="absolute inset-x-0 bottom-0 bg-slate-900/80 backdrop-blur-xs text-[9px] text-slate-300 text-center py-0.5 px-1 font-mono">
+                    Wikimedia Commons CC
+                  </div>
                 </div>
                 <div className="space-y-2 text-center sm:text-left flex-1">
                   <div className="text-xs text-slate-600 leading-relaxed">
