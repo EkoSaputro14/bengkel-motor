@@ -20,6 +20,7 @@ import { AdminUserManager } from './pages/AdminUserManager';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { ApiTestPage } from './pages/ApiTestPage';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { Wrench } from 'lucide-react';
 
@@ -37,6 +38,7 @@ export function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/history" element={<ServiceHistoryPage />} />
+              <Route path="/api-test" element={<ApiTestPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
               {/* Authenticated Profile Route */}

@@ -14,7 +14,7 @@ import {
   User,
   Settings,
   ChevronDown,
-  Package,
+  Code2,
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -170,11 +170,11 @@ export const Navbar: React.FC = () => {
                       <span>Riwayat</span>
                     </Link>
 
-                    {/* Katalog Suku Cadang & Sparepart */}
-                    <a href="/#katalog-sparepart" className={linkCls('/#katalog-sparepart')}>
-                      <Package className="h-4 w-4" />
-                      <span>Sparepart</span>
-                    </a>
+                    {/* API Test Lab */}
+                    <Link to="/api-test" className={linkCls('/api-test')}>
+                      <Code2 className="h-4 w-4" />
+                      <span>API Test</span>
+                    </Link>
 
                     <div className="h-6 w-px bg-slate-200 mx-1.5" />
 
@@ -245,13 +245,13 @@ export const Navbar: React.FC = () => {
                   </>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <a
-                      href="/#katalog-sparepart"
+                    <Link
+                      to="/api-test"
                       className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3.5 py-2 rounded-full hover:bg-slate-100/80 transition flex items-center gap-1.5"
                     >
-                      <Package className="h-4 w-4" />
-                      <span>Sparepart</span>
-                    </a>
+                      <Code2 className="h-4 w-4" />
+                      <span>API Test</span>
+                    </Link>
                     <Link
                       to="/history"
                       className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3.5 py-2 rounded-full hover:bg-slate-100/80 transition flex items-center gap-1.5"
@@ -359,14 +359,14 @@ export const Navbar: React.FC = () => {
                     <span>Riwayat</span>
                   </Link>
 
-                  <a
-                    href="/#katalog-sparepart"
+                  <Link
+                    to="/api-test"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={mobileLinkCls('/#katalog-sparepart')}
+                    className={mobileLinkCls('/api-test')}
                   >
-                    <Package className="h-4 w-4" />
-                    <span>Katalog Sparepart</span>
-                  </a>
+                    <Code2 className="h-4 w-4" />
+                    <span>API Test Lab</span>
+                  </Link>
 
                   <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className={mobileLinkCls('/profile')}>
                     <Settings className="h-4 w-4" />
@@ -389,14 +389,14 @@ export const Navbar: React.FC = () => {
               </>
             ) : (
               <div className="space-y-2 pt-1">
-                <a
-                  href="/#katalog-sparepart"
+                <Link
+                  to="/api-test"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={mobileLinkCls('/#katalog-sparepart')}
+                  className={mobileLinkCls('/api-test')}
                 >
-                  <Package className="h-4 w-4" />
-                  <span>Katalog Sparepart</span>
-                </a>
+                  <Code2 className="h-4 w-4" />
+                  <span>API Test Lab</span>
+                </Link>
                 <Link to="/history" onClick={() => setIsMobileMenuOpen(false)} className={mobileLinkCls('/history')}>
                   <History className="h-4 w-4" />
                   <span>Riwayat</span>

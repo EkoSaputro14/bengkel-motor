@@ -886,7 +886,8 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ═══ Section Katalog Suku Cadang & Sparepart Asli ═══ */}
+      {/* ═══ Section Katalog Suku Cadang & Sparepart Asli (Disembunyikan Sementara) ═══ */}
+      {false && (
       <section id="katalog-sparepart" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 sm:mt-20 scroll-mt-24">
         <div className="bg-white/85 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-soft space-y-8">
           
@@ -1270,9 +1271,10 @@ export const LandingPage: React.FC = () => {
 
         </div>
       </section>
+      )}
 
-      {/* ═══ Modal Detail Spesifikasi Teknis Suku Cadang (Apple / Dribbble Style) ═══ */}
-      {detailModalItem && (
+      {/* ═══ Modal Detail Spesifikasi Teknis Suku Cadang (Disembunyikan Sementara) ═══ */}
+      {false && detailModalItem && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
             
