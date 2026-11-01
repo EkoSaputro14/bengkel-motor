@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MessageCircle, X, Send } from 'lucide-react';
 
 export const WhatsAppWidget: React.FC = () => {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Sembunyikan widget floating WhatsApp khusus pada halaman API Testing Lab agar tidak menutupi inspector
+  if (location.pathname === '/api-test') {
+    return null;
+  }
 
   const waNumber = '6281234567890'; // WhatsApp CS BengkelMotor
 

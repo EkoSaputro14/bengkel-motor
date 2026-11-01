@@ -701,10 +701,10 @@ export const ApiTestPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ═══ Main Testing Console Grid ═══ */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Endpoint Navigation & Filter (5 Cols) */}
-        <div className="lg:col-span-5 bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-5 shadow-soft space-y-4">
+      {/* ═══ Main Testing Console Grid (Side-by-Side 2-Kolom) ═══ */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Endpoint Navigation & Filter (5 Cols / Sticky) */}
+        <div className="md:col-span-5 md:sticky md:top-24 bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-5 shadow-soft space-y-4">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
@@ -725,8 +725,8 @@ export const ApiTestPage: React.FC = () => {
               />
             </div>
 
-            {/* Category Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px]">
+            {/* Category Filter Pills (Wrap rapi tanpa terpotong) */}
+            <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
               {['All', 'System', 'Auth', 'Vehicles', 'Service Slots', 'Bookings', 'Mechanic', 'Admin'].map((cat) => (
                 <button
                   key={cat}
@@ -788,7 +788,7 @@ export const ApiTestPage: React.FC = () => {
         </div>
 
         {/* Right Column: Request & Response Workspace (7 Cols) */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="md:col-span-7 space-y-6">
           {/* Request Config Card */}
           <div className="bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-6 shadow-soft space-y-5">
             <div className="space-y-1 border-b border-slate-100 pb-3">
