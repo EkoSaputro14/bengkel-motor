@@ -43,8 +43,10 @@ Aplikasi sistem informasi penjadwalan servis motor terintegrasi berbasis **Larav
 ---
 
 ## 👥 Tim Pengembang (Kelompok 2 — Pemrograman Web Service)
-* **Eko Saputro (NIM: 23215050)** — Lead Backend & DevOps
-* **Intan Komalasari (NIM: 23215048)** — Frontend & UI/UX
-* **Diki Wahyudi (NIM: 23215049)** — QA & Database Architect
+* **Intan Komalasari** (NIM: 23215008)
+* **Feldi Sanjaya** (NIM: 23215055)
+* **Imzy Zulijar Setiawan** (NIM: 23215022)
+* **Eko Saputro** (NIM: 23215050)
+* **Zakky Fawwaz Mubarok** (NIM: 23215031)
 * **Dosen Pengampu:** Zaenul Arif, S.Kom., M.Kom  
 * **Institusi:** Universitas Harkat Negeri
