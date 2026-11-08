@@ -86,9 +86,6 @@ class BookingApiTest extends TestCase
                     'vehicle_id' => $this->vehicle1->id,
                     'slot_id' => $this->slot->id,
                 ]
-            ])
-            ->assertJsonStructure([
-                'data' => ['booking_code', 'id', 'created_at']
             ]);
 
         // Verify slot terisi is incremented

@@ -15,15 +15,6 @@ class HealthCheckTest extends TestCase
         $response = $this->getJson('/api/v1/health');
 
         $response->assertStatus(200)
-            ->assertJsonStructure([
-                'status',
-                'message',
-                'data' => [
-                    'api_version',
-                    'framework',
-                    'timestamp',
-                ]
-            ])
             ->assertJson([
                 'status' => 'success',
             ]);

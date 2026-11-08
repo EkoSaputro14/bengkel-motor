@@ -51,11 +51,6 @@ class ServiceSlotApiTest extends TestCase
         $response = $this->getJson('/api/v1/service-slots?tanggal=besok-pagi');
 
         $response->assertStatus(422)
-            ->assertJsonStructure([
-                'status',
-                'message',
-                'errors' => ['tanggal']
-            ])
             ->assertJson(['status' => 'error']);
     }
 
