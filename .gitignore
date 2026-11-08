@@ -4,6 +4,13 @@ Thumbs.db
 .idea/
 .vscode/
 
+# Deliverables & Temporary Artifacts
+deliverables/screenshots/
+*.png
+*.jpg
+*.jpeg
+tunnel.log
+
 # Backend
 backend/vendor/
 backend/node_modules/
