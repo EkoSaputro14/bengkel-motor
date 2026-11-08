@@ -704,7 +704,11 @@ export const ApiTestPage: React.FC = () => {
       {/* ═══ Main Testing Console Grid (Side-by-Side 2-Kolom) ═══ */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
         {/* Left Column: Endpoint Navigation & Filter (5 Cols / Sticky) */}
-        <div className="md:col-span-5 md:sticky md:top-24 bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-5 shadow-soft space-y-4">
+        <div 
+          role="navigation" 
+          aria-label="Katalog Endpoint API"
+          className="md:col-span-5 md:sticky md:top-24 bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-5 shadow-soft space-y-4"
+        >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
@@ -865,7 +869,11 @@ export const ApiTestPage: React.FC = () => {
           </div>
 
           {/* Response Inspector Card */}
-          <div className="bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-6 shadow-soft space-y-4">
+          <div 
+            role="region" 
+            aria-label="Panel Respon API"
+            className="bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-6 shadow-soft space-y-4"
+          >
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <Database className="h-4 w-4 text-slate-700" />
@@ -875,7 +883,12 @@ export const ApiTestPage: React.FC = () => {
               </div>
 
               {responseStatus !== null && (
-                <div className="flex items-center gap-2 text-xs">
+                <div 
+                  role="status" 
+                  aria-live="polite" 
+                  aria-atomic="true"
+                  className="flex items-center gap-2 text-xs"
+                >
                   <span
                     className={`font-mono font-black px-2.5 py-0.5 rounded-full border ${getStatusBadge(
                       responseStatus
