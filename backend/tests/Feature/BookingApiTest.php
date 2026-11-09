@@ -155,4 +155,125 @@ class BookingApiTest extends TestCase
         // Slot terisi must be decremented back to 0
         $this->assertEquals(0, $this->slot->fresh()->terisi);
     }
+
+    public function test_admin_and_mechanic_can_update_booking_status(): void
+    {
+        $admin = User::create([
+            'nama' => 'Admin Bengkel',
+            'email' => 'admin@example.com',
+            'no_hp' => '081299990000',
+            'password' => bcrypt('password123'),
+            'role' => 'ADMIN',
+        ]);
+        $adminToken = $admin->createToken('admin')->plainTextToken;
+
+        $mechanic = User::create([
+            'nama' => 'Joko Mekanik',
+            'email' => 'joko@example.com',
+            'no_hp' => '081299990001',
+            'password' => bcrypt('password123'),
+            'role' => 'MECHANIC',
+        ]);
+        $mechanicToken = $mechanic->createToken('mechanic')->plainTextToken;
+
+        $booking = Booking::create([
+            'booking_code' => 'BK-STATUS-TEST-1',
+            'user_id' => $this->customer1->id,
+            'vehicle_id' => $this->vehicle1->id,
+            'slot_id' => $this->slot->id,
+            'keluhan' => 'Servis CVT',
+            'status' => 'CONFIRMED',
+        ]);
+
+        // 1. Admin updates status to in_progress (supports lowercase 'in_progress')
+        $resAdmin = $this->withHeader('Authorization', 'Bearer ' . $adminToken)
+            ->patchJson("/api/v1/bookings/{$booking->id}/status", [
+                'status' => 'in_progress',
+            ]);
+
+        $resAdmin->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'data' => [
+                    'status' => 'IN_PROGRESS',
+                ]
+            ]);
+
+        $this->assertEquals('IN_PROGRESS', $booking->fresh()->status);
+
+        // 2. Mechanic updates status to completed
+        $resMech = $this->withHeader('Authorization', 'Bearer ' . $mechanicToken)
+            ->patchJson("/api/v1/bookings/{$booking->id}/status", [
+                'status' => 'completed',
+            ]);
+
+        $resMech->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'data' => [
+                    'status' => 'COMPLETED',
+                ]
+            ]);
+
+        $this->assertEquals('COMPLETED', $booking->fresh()->status);
+    }
+
+    public function test_customer_cannot_update_booking_status(): void
+    {
+        $booking = Booking::create([
+            'booking_code' => 'BK-STATUS-TEST-2',
+            'user_id' => $this->customer1->id,
+            'vehicle_id' => $this->vehicle1->id,
+            'slot_id' => $this->slot->id,
+            'keluhan' => 'Cek rem',
+            'status' => 'CONFIRMED',
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token1)
+            ->patchJson("/api/v1/bookings/{$booking->id}/status", [
+                'status' => 'COMPLETED',
+            ]);
+
+        $response->assertStatus(403)
+            ->assertJson(['status' => 'error']);
+    }
+
+    public function test_update_booking_status_validation_and_transitions(): void
+    {
+        $admin = User::create([
+            'nama' => 'Admin Bengkel 2',
+            'email' => 'admin2@example.com',
+            'no_hp' => '081299990002',
+            'password' => bcrypt('password123'),
+            'role' => 'ADMIN',
+        ]);
+        $adminToken = $admin->createToken('admin2')->plainTextToken;
+
+        $booking = Booking::create([
+            'booking_code' => 'BK-STATUS-TEST-3',
+            'user_id' => $this->customer1->id,
+            'vehicle_id' => $this->vehicle1->id,
+            'slot_id' => $this->slot->id,
+            'keluhan' => 'Ganti oli',
+            'status' => 'COMPLETED',
+        ]);
+
+        // 1. Cannot cancel completed booking (409 Conflict)
+        $resCancelCompleted = $this->withHeader('Authorization', 'Bearer ' . $adminToken)
+            ->patchJson("/api/v1/bookings/{$booking->id}/status", [
+                'status' => 'CANCELLED',
+            ]);
+
+        $resCancelCompleted->assertStatus(409)
+            ->assertJson(['status' => 'error']);
+
+        // 2. Invalid status returns 422
+        $resInvalid = $this->withHeader('Authorization', 'Bearer ' . $adminToken)
+            ->patchJson("/api/v1/bookings/{$booking->id}/status", [
+                'status' => 'invalid_status_xyz',
+            ]);
+
+        $resInvalid->assertStatus(422)
+            ->assertJson(['status' => 'error']);
+    }
 }

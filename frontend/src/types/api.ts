@@ -32,7 +32,7 @@ export interface ServiceSlot {
   is_available: boolean;
 }
 
-export type BookingStatus = 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+export type BookingStatus = 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 export interface SparePart {
   nama: string;

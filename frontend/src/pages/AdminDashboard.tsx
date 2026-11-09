@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { StatusBadge } from '../components/Badge';
+import type { BookingStatus } from '../types/api';
 import {
   Users,
   Bike,
@@ -14,12 +15,16 @@ import {
   BarChart3,
   PieChart,
   CircleDot,
+  CheckCircle,
+  AlertTriangle,
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
   const [bookings, setBookings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [statusNotification, setStatusNotification] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +43,49 @@ export const AdminDashboard: React.FC = () => {
     };
     fetchData();
   }, []);
+
+  const handleStatusChange = async (bookingId: number, newStatus: BookingStatus) => {
+    setUpdatingId(bookingId);
+    try {
+      const res = await api.patch(`/bookings/${bookingId}/status`, { status: newStatus });
+      if (res.data.status === 'success') {
+        const updatedStatus = res.data.data?.status || newStatus;
+        // Update lokal state tabel secara reaktif tanpa reload
+        setBookings((prev) =>
+          prev.map((b) => (b.id === bookingId ? { ...b, status: updatedStatus } : b))
+        );
+
+        // Sinkronisasi lokal metrik servis selesai jika status berubah ke/dari COMPLETED
+        setStats((prev: any) => {
+          if (!prev) return prev;
+          const oldBooking = bookings.find((b) => b.id === bookingId);
+          let completedDelta = 0;
+          if (oldBooking?.status !== 'COMPLETED' && updatedStatus === 'COMPLETED') completedDelta = 1;
+          if (oldBooking?.status === 'COMPLETED' && updatedStatus !== 'COMPLETED') completedDelta = -1;
+          return {
+            ...prev,
+            counts: {
+              ...prev.counts,
+              completed_bookings: Math.max(0, (prev.counts?.completed_bookings || 0) + completedDelta),
+            },
+          };
+        });
+
+        setStatusNotification({
+          text: `Status booking #${bookingId} berhasil diperbarui menjadi ${updatedStatus}.`,
+          type: 'success',
+        });
+        setTimeout(() => setStatusNotification(null), 4000);
+      }
+    } catch (err: any) {
+      setStatusNotification({
+        text: err.response?.data?.message || 'Gagal memperbarui status pengerjaan servis.',
+        type: 'error',
+      });
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -270,11 +318,31 @@ export const AdminDashboard: React.FC = () => {
       {/* All Bookings Table */}
       <div className="bg-white rounded-3xl ring-1 ring-slate-900/5 shadow-soft overflow-hidden">
         <div className="flex flex-wrap justify-between items-center border-b border-slate-100 px-6 py-4">
-          <h3 className="font-extrabold text-slate-900 text-lg">Seluruh Data Booking Masuk</h3>
+          <div>
+            <h3 className="font-extrabold text-slate-900 text-lg">Seluruh Data Booking Masuk</h3>
+            <p className="text-xs text-slate-500 mt-0.5">Admin dapat langsung mengubah status pengerjaan servis secara real-time.</p>
+          </div>
           <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">
             {bookings.length} data
           </span>
         </div>
+
+        {statusNotification && (
+          <div
+            className={`mx-6 mt-4 p-3.5 rounded-2xl text-xs font-semibold flex items-center gap-2.5 animate-fade-in ${
+              statusNotification.type === 'success'
+                ? 'bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200'
+                : 'bg-rose-50 text-rose-800 ring-1 ring-rose-200'
+            }`}
+          >
+            {statusNotification.type === 'success' ? (
+              <CheckCircle className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+            ) : (
+              <AlertTriangle className="h-4 w-4 text-rose-600 flex-shrink-0" />
+            )}
+            <span>{statusNotification.text}</span>
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-600">
@@ -284,7 +352,8 @@ export const AdminDashboard: React.FC = () => {
                 <th className="py-3.5 px-5">Pelanggan</th>
                 <th className="py-3.5 px-5">Kendaraan</th>
                 <th className="py-3.5 px-5">Jadwal Slot</th>
-                <th className="py-3.5 px-5">Status</th>
+                <th className="py-3.5 px-5">Status Saat Ini</th>
+                <th className="py-3.5 px-5">Aksi / Ubah Status</th>
                 <th className="py-3.5 px-5">Keluhan</th>
               </tr>
             </thead>
@@ -303,6 +372,24 @@ export const AdminDashboard: React.FC = () => {
                   </td>
                   <td className="py-3.5 px-5">
                     <StatusBadge status={b.status} />
+                  </td>
+                  <td className="py-3.5 px-5">
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={b.status}
+                        disabled={updatingId === b.id}
+                        onChange={(e) => handleStatusChange(b.id, e.target.value as BookingStatus)}
+                        className="px-2.5 py-1.5 bg-slate-50 hover:bg-white ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-600 rounded-xl text-xs font-bold text-slate-800 transition disabled:opacity-50 cursor-pointer shadow-sm"
+                      >
+                        <option value="CONFIRMED">Terkonfirmasi (CONFIRMED)</option>
+                        <option value="IN_PROGRESS">Sedang Dikerjakan (IN_PROGRESS)</option>
+                        <option value="COMPLETED">Selesai (COMPLETED)</option>
+                        <option value="CANCELLED">Dibatalkan (CANCELLED)</option>
+                      </select>
+                      {updatingId === b.id && (
+                        <div className="animate-spin h-3.5 w-3.5 border-2 border-brand-200 border-t-brand-600 rounded-full flex-shrink-0" />
+                      )}
+                    </div>
                   </td>
                   <td className="py-3.5 px-5 max-w-xs truncate">{b.keluhan}</td>
                 </tr>

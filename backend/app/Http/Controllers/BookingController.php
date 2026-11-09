@@ -170,6 +170,93 @@ class BookingController extends Controller
         ], 200);
     }
 
+    public function updateStatus(Request $request, Booking $booking): JsonResponse
+    {
+        $request->validate([
+            'status' => 'required|string',
+        ]);
+
+        $statusInput = trim($request->input('status'));
+
+        $statusMap = [
+            'pending'     => 'CONFIRMED',
+            'confirmed'   => 'CONFIRMED',
+            'in_progress' => 'IN_PROGRESS',
+            'completed'   => 'COMPLETED',
+            'cancelled'   => 'CANCELLED',
+            'CONFIRMED'   => 'CONFIRMED',
+            'IN_PROGRESS' => 'IN_PROGRESS',
+            'COMPLETED'   => 'COMPLETED',
+            'CANCELLED'   => 'CANCELLED',
+        ];
+
+        $targetStatus = $statusMap[$statusInput] ?? $statusMap[strtolower($statusInput)] ?? $statusMap[strtoupper($statusInput)] ?? null;
+
+        if (!$targetStatus) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Status tidak valid. Pilihan status yang diperbolehkan: pending (CONFIRMED), in_progress (IN_PROGRESS), completed (COMPLETED), atau cancelled (CANCELLED).',
+                'errors' => [
+                    'status' => ['Nilai status yang dikirimkan tidak dikenali.']
+                ]
+            ], 422);
+        }
+
+        $oldStatus = $booking->status;
+
+        if ($oldStatus === $targetStatus) {
+            return response()->json([
+                'status' => 'success',
+                'message' => "Status booking sudah bernilai {$targetStatus}.",
+                'data' => $booking->fresh()->load(['vehicle.user:id,nama,no_hp', 'slot', 'user:id,nama,email,no_hp', 'serviceRecord']),
+            ], 200);
+        }
+
+        if ($oldStatus === 'COMPLETED' && $targetStatus === 'CANCELLED') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Booking yang sudah selesai diservis (COMPLETED) tidak dapat dibatalkan.',
+            ], 409);
+        }
+
+        try {
+            DB::transaction(function () use ($booking, $oldStatus, $targetStatus) {
+                if ($oldStatus !== 'CANCELLED' && $targetStatus === 'CANCELLED') {
+                    $slot = ServiceSlot::where('id', $booking->slot_id)->lockForUpdate()->first();
+                    if ($slot && $slot->terisi > 0) {
+                        $slot->decrement('terisi');
+                    }
+                } elseif ($oldStatus === 'CANCELLED' && $targetStatus !== 'CANCELLED') {
+                    $slot = ServiceSlot::where('id', $booking->slot_id)->lockForUpdate()->first();
+                    if ($slot) {
+                        if ($slot->terisi >= $slot->kuota_maksimal) {
+                            throw new \Exception('Slot waktu telah penuh, booking tidak dapat diaktifkan kembali.', 409);
+                        }
+                        $slot->increment('terisi');
+                    }
+                }
+
+                $booking->update(['status' => $targetStatus]);
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Status pengerjaan servis berhasil diubah dari {$oldStatus} menjadi {$targetStatus}.",
+                'data' => $booking->fresh()->load(['vehicle.user:id,nama,no_hp', 'slot', 'user:id,nama,email,no_hp', 'serviceRecord']),
+            ], 200);
+
+        } catch (\Exception $e) {
+            $code = $e->getCode();
+            if (!in_array($code, [400, 403, 404, 409, 422], true)) {
+                $code = 500;
+            }
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], $code);
+        }
+    }
+
     public function customerBookings(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -188,7 +275,7 @@ class BookingController extends Controller
 
     public function mechanicQueue(Request $request): JsonResponse
     {
-        $bookings = Booking::where('status', 'CONFIRMED')
+        $bookings = Booking::whereIn('status', ['CONFIRMED', 'IN_PROGRESS'])
             ->with(['vehicle.user:id,nama,no_hp', 'slot'])
             ->join('service_slots', 'bookings.slot_id', '=', 'service_slots.id')
             ->orderBy('service_slots.tanggal', 'asc')
