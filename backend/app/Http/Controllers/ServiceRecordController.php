@@ -81,6 +81,14 @@ class ServiceRecordController extends Controller
             });
         }
 
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
         $records = $query->latest()->get();
 
         return response()->json([
@@ -90,6 +98,8 @@ class ServiceRecordController extends Controller
             'meta' => [
                 'total_records' => $records->count(),
                 'filter_no_polisi' => $request->no_polisi ?? null,
+                'filter_start_date' => $request->start_date ?? null,
+                'filter_end_date' => $request->end_date ?? null,
             ]
         ], 200);
     }

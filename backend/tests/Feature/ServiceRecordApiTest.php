@@ -144,4 +144,31 @@ class ServiceRecordApiTest extends TestCase
             ])
             ->assertJsonPath('data.0.odometer_km', 10250);
     }
+
+    public function test_can_filter_service_history_by_date_range(): void
+    {
+        ServiceRecord::create([
+            'booking_id' => $this->booking->id,
+            'mechanic_id' => $this->mechanic->id,
+            'odometer_km' => 10250,
+            'tindakan' => 'Servis berkala',
+            'suku_cadang' => [['nama' => 'Oli Mesin', 'qty' => 1]],
+            'catatan_mekanik' => 'Kondisi baik',
+        ]);
+        $this->booking->update(['status' => 'COMPLETED']);
+
+        $today = now()->toDateString();
+        $response = $this->withHeader('Authorization', 'Bearer ' . $this->customerToken)
+            ->getJson("/api/v1/service-history?start_date={$today}&end_date={$today}");
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'meta' => [
+                    'total_records' => 1,
+                    'filter_start_date' => $today,
+                    'filter_end_date' => $today,
+                ]
+            ]);
+    }
 }
