@@ -82,6 +82,7 @@ Route::prefix('v1')->group(function () {
         // Mechanic Specific Routes
         Route::middleware('role:MECHANIC,ADMIN')->group(function () {
             Route::get('/mechanic/bookings', [BookingController::class, 'mechanicQueue']);
+            Route::match(['put', 'patch'], '/bookings/{booking}/status', [BookingController::class, 'updateStatus']);
             Route::post('/service-records', [ServiceRecordController::class, 'store']);
         });
 

@@ -10,6 +10,13 @@ export const StatusBadge: React.FC<{ status: BookingStatus }> = ({ status }) => 
           Terkonfirmasi (CONFIRMED)
         </span>
       );
+    case 'IN_PROGRESS':
+      return (
+        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 ring-1 ring-amber-200/80">
+          <span className="w-1.5 h-1.5 mr-1.5 bg-amber-500 rounded-full animate-pulse" />
+          Dikerjakan (IN_PROGRESS)
+        </span>
+      );
     case 'COMPLETED':
       return (
         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 ring-1 ring-blue-200/80">

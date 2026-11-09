@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('restrict');
             $table->foreignId('slot_id')->constrained('service_slots')->onDelete('restrict');
             $table->text('keluhan');
-            $table->enum('status', ['CONFIRMED', 'CANCELLED', 'COMPLETED'])->default('CONFIRMED');
+            $table->enum('status', ['CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'])->default('CONFIRMED');
             $table->timestamps();
 
             $table->index('user_id');

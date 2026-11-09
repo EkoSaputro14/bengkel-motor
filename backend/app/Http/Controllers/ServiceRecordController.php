@@ -25,10 +25,10 @@ class ServiceRecordController extends Controller
             ], 404);
         }
 
-        if ($booking->status !== 'CONFIRMED') {
+        if (!in_array($booking->status, ['CONFIRMED', 'IN_PROGRESS'], true)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Hanya booking berstatus CONFIRMED yang dapat dicatat pengerjaan servisnya. Status saat ini: ' . $booking->status,
+                'message' => 'Hanya booking berstatus CONFIRMED atau IN_PROGRESS yang dapat dicatat pengerjaan servisnya. Status saat ini: ' . $booking->status,
             ], 409);
         }
 
