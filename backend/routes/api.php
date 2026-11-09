@@ -44,8 +44,8 @@ Route::prefix('v1')->group(function () {
         ], 200);
     });
 
-    // 02. Public Authentication Endpoints
-    Route::prefix('auth')->group(function () {
+    // 02. Public Authentication Endpoints (Protected with Rate Limiter)
+    Route::prefix('auth')->middleware('throttle:10,1')->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
     });
