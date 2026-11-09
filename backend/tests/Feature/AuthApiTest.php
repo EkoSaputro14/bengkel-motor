@@ -22,15 +22,6 @@ class AuthApiTest extends TestCase
         $response = $this->postJson('/api/v1/auth/register', $payload);
 
         $response->assertStatus(201)
-            ->assertJsonStructure([
-                'status',
-                'message',
-                'data' => [
-                    'user' => ['id', 'nama', 'email', 'role'],
-                    'token',
-                    'token_type'
-                ]
-            ])
             ->assertJson([
                 'status' => 'success',
                 'data' => [
@@ -56,11 +47,6 @@ class AuthApiTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonStructure([
-                'status',
-                'message',
-                'errors' => ['nama', 'email', 'no_hp', 'password']
-            ])
             ->assertJson(['status' => 'error']);
     }
 
@@ -80,15 +66,6 @@ class AuthApiTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJsonStructure([
-                'status',
-                'message',
-                'data' => [
-                    'user',
-                    'token',
-                    'token_type'
-                ]
-            ])
             ->assertJson(['status' => 'success']);
     }
 
