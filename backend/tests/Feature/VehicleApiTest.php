@@ -126,4 +126,23 @@ class VehicleApiTest extends TestCase
                 'errors' => ['no_polisi']
             ]);
     }
+
+    public function test_customer_can_delete_own_vehicle(): void
+    {
+        $vehicle = Vehicle::create([
+            'user_id' => $this->customer1->id,
+            'no_polisi' => 'G 5555 DEL',
+            'merk' => 'Suzuki',
+            'model' => 'Satria FU',
+            'tahun' => 2019,
+        ]);
+
+        $deleteResponse = $this->withHeader('Authorization', 'Bearer ' . $this->token1)
+            ->deleteJson("/api/v1/vehicles/{$vehicle->id}");
+
+        $deleteResponse->assertStatus(200)
+            ->assertJson(['status' => 'success']);
+
+        $this->assertDatabaseMissing('vehicles', ['id' => $vehicle->id]);
+    }
 }
